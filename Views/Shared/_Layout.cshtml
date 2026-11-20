@@ -1,0 +1,82 @@
+@using System.Text.Json
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.Extensions.Options
+@using TechStore.Options
+@inject IAntiforgery Antiforgery
+@inject JsonLocalizationStore LocalizationStore
+@inject IOptions<StoreOptions> StoreOptionsAccessor
+@{
+    var currentCulture = LocalizationHelper.CurrentCultureCode();
+    var csrfTokens = Antiforgery.GetAndStoreTokens(Context);
+    var clientI18n = LocalizationStore.GetClientDictionary(currentCulture);
+    var store = StoreOptionsAccessor.Value;
+    var pageTitle = ViewData["Title"] is string title && !string.IsNullOrWhiteSpace(title)
+        ? $"{title} — {L["Site.Name"]}"
+        : $"{L["Site.Name"]} — {L["Site.Tagline"]}";
+    var pageDescription = ViewData["Description"] as string ?? L["Site.Description"].Value;
+    var clientConfigJson = JsonSerializer.Serialize(new
+    {
+        culture = currentCulture,
+        currencyCode = store.CurrencyCode,
+        currencySymbol = store.CurrencySymbol,
+        freeShippingThreshold = store.FreeShippingThreshold,
+        flatShippingFee = store.FlatShippingFee,
+        lowStockThreshold = store.LowStockThreshold
+    });
+    var clientI18nJson = JsonSerializer.Serialize(clientI18n);
+}
+<!DOCTYPE html>
+<html lang="@currentCulture" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="@pageDescription" />
+    <meta name="csrf-token" content="@csrfTokens.RequestToken" />
+    <title>@pageTitle</title>
+
+    @* Inline pre-paint theme bootstrap prevents Light/Dark theme flicker on load *@
+    <script>
+        (function () {
+            try {
+                var saved = window.localStorage.getItem("techstore-theme");
+                var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                var theme = saved === "dark" || saved === "light" ? saved : (prefersDark ? "dark" : "light");
+                document.documentElement.setAttribute("data-theme", theme);
+            } catch (e) {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <a class="skip-link" href="#main-content">@L["Nav.SkipToContent"]</a>
+
+    @await Html.PartialAsync("_Header")
+
+    <main id="main-content" tabindex="-1">
+        @RenderBody()
+    </main>
+
+    @await Html.PartialAsync("_Footer")
+    @await Html.PartialAsync("_CartDrawer")
+
+    <div class="drawer-backdrop" data-drawer-backdrop aria-hidden="true"></div>
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script>
+        window.TechStoreConfig = @Html.Raw(clientConfigJson);
+        window.TechStoreI18n = @Html.Raw(clientI18nJson);
+    </script>
+    <script src="~/js/core.js" asp-append-version="true" defer></script>
+    <script src="~/js/theme.js" asp-append-version="true" defer></script>
+    <script src="~/js/nav.js" asp-append-version="true" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

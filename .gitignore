@@ -1,0 +1,33 @@
+# .NET build artifacts
+bin/
+obj/
+out/
+publish/
+
+# Local SQLite database files
+Data/*.db
+Data/*.db-shm
+Data/*.db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Uploaded user media (keep directory placeholder)
+wwwroot/uploads/*
+!wwwroot/uploads/products/
+wwwroot/uploads/products/*
+!wwwroot/uploads/products/.gitkeep
+
+# Secrets & environment files
+.env
+.env.local
+appsettings.Local.json
+
+# IDE & OS files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.DS_Store
+Thumbs.db

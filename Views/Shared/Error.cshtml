@@ -1,0 +1,19 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = L["Error.Title"];
+}
+
+<section class="container">
+    <div class="error-card">
+        <span class="badge badge-danger">500</span>
+        <h1>@L["Error.Title"]</h1>
+        <p style="color:var(--text-secondary);">@L["Error.Subtitle"]</p>
+        @if (Model.ShowRequestId)
+        {
+            <p class="mono" style="font-size:0.8rem;color:var(--text-muted);">
+                @L["Error.RequestId"]: @Model.RequestId
+            </p>
+        }
+        <a class="btn btn-primary" asp-area="" asp-controller="Home" asp-action="Index">@L["Error.BackHome"]</a>
+    </div>
+</section>

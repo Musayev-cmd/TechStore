@@ -1,0 +1,9 @@
+@using TechStore
+@using TechStore.Models
+@using TechStore.ViewModels
+@using TechStore.Services
+@using TechStore.Services.Localization
+@using Microsoft.Extensions.Localization
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IStringLocalizer<SharedResource> L
+@inject ICurrencyFormatter Currency

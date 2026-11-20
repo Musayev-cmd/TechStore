@@ -1,0 +1,121 @@
+/* ==========================================================================
+   TechStore Design Tokens — Minimalist High-Craft Hardware Aesthetic
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* Surface & Canvas */
+  --bg-page: #f7f8fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #eff1f5;
+  --bg-elevated: #ffffff;
+  --bg-header: rgba(255, 255, 255, 0.86);
+  --bg-overlay: rgba(11, 14, 22, 0.48);
+
+  /* Ink & Typography */
+  --text-primary: #10131a;
+  --text-secondary: #4e5668;
+  --text-muted: #7a8396;
+  --text-inverse: #ffffff;
+
+  /* Precision Borders */
+  --border-subtle: #e3e6ee;
+  --border-strong: #c8cedb;
+  --border-focus: #0f62fe;
+
+  /* Brand Accent (Precision Cobalt) */
+  --accent: #0f62fe;
+  --accent-hover: #0353e9;
+  --accent-soft: rgba(15, 98, 254, 0.10);
+  --accent-border: rgba(15, 98, 254, 0.24);
+
+  /* Semantic Status */
+  --success: #0d9468;
+  --success-soft: rgba(13, 148, 104, 0.11);
+  --warning: #d97706;
+  --warning-soft: rgba(217, 119, 6, 0.12);
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.11);
+  --info: #0284c7;
+  --info-soft: rgba(2, 132, 199, 0.11);
+
+  /* Skeleton Shimmer */
+  --skeleton-base: #e7eaf0;
+  --skeleton-highlight: #f3f5f9;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Radius Scale */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(16, 19, 26, 0.04);
+  --shadow-sm: 0 2px 8px rgba(16, 19, 26, 0.06);
+  --shadow-md: 0 10px 28px rgba(16, 19, 26, 0.08);
+  --shadow-lg: 0 20px 48px rgba(16, 19, 26, 0.14);
+
+  /* Layout & Motion */
+  --container-max: 1280px;
+  --header-height: 68px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: 150ms var(--ease-out);
+  --transition-base: 240ms var(--ease-out);
+  --transition-slow: 340ms var(--ease-out);
+
+  /* Z-index layers */
+  --z-header: 100;
+  --z-backdrop: 200;
+  --z-drawer: 210;
+  --z-modal: 250;
+  --z-toast: 300;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-page: #0a0c12;
+  --bg-surface: #12151f;
+  --bg-subtle: #191e2b;
+  --bg-elevated: #1c2231;
+  --bg-header: rgba(18, 21, 31, 0.84);
+  --bg-overlay: rgba(2, 4, 10, 0.72);
+
+  --text-primary: #f2f4f8;
+  --text-secondary: #a1a9bc;
+  --text-muted: #6f788c;
+  --text-inverse: #0a0c12;
+
+  --border-subtle: #232a3a;
+  --border-strong: #333d54;
+  --border-focus: #4589ff;
+
+  --accent: #4589ff;
+  --accent-hover: #6aa2ff;
+  --accent-soft: rgba(69, 137, 255, 0.16);
+  --accent-border: rgba(69, 137, 255, 0.34);
+
+  --success: #34d399;
+  --success-soft: rgba(52, 211, 153, 0.14);
+  --warning: #fbbf24;
+  --warning-soft: rgba(251, 191, 36, 0.14);
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.15);
+  --info: #38bdf8;
+  --info-soft: rgba(56, 189, 248, 0.15);
+
+  --skeleton-base: #1a2030;
+  --skeleton-highlight: #242c42;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.36);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.48);
+  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.62);
+}

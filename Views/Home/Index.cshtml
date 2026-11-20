@@ -1,0 +1,202 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = L["Nav.Home"];
+}
+
+<section class="hero">
+    <div class="container hero-grid">
+        <div>
+            <span class="hero-eyebrow">
+                <span class="status-dot" aria-hidden="true"></span>
+                @L["Home.Eyebrow"]
+            </span>
+            <h1 class="hero-title">@L["Home.HeroTitle"]</h1>
+            <p class="hero-subtitle">@L["Home.HeroSubtitle"]</p>
+
+            <div class="hero-actions">
+                <a class="btn btn-primary btn-lg" href="/Catalog">@L["Home.HeroCtaPrimary"]</a>
+                <a class="btn btn-secondary btn-lg" href="/Catalog?category=components">@L["Home.HeroCtaSecondary"]</a>
+            </div>
+
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-value">@Model.TotalCategories</div>
+                    <div class="hero-stat-label">@L["Home.StatCategories"]</div>
+                </div>
+                <div>
+                    <div class="hero-stat-value">@Model.TotalProducts</div>
+                    <div class="hero-stat-label">@L["Home.StatProducts"]</div>
+                </div>
+                <div>
+                    <div class="hero-stat-value">100%</div>
+                    <div class="hero-stat-label">@L["Home.StatWarranty"]</div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.HeroProduct is not null)
+        {
+            <article class="hero-showcase">
+                <a class="hero-showcase-media" href="/Catalog/Details/@Model.HeroProduct.Slug" style="display:block;">
+                    <img src="@Model.HeroProduct.ImageUrl" alt="@Model.HeroProduct.Name" loading="eager" />
+                </a>
+                <div class="hero-showcase-bar">
+                    <div>
+                        <div class="mono" style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;">
+                            @Model.HeroProduct.Brand · @Model.HeroProduct.Sku
+                        </div>
+                        <a href="/Catalog/Details/@Model.HeroProduct.Slug" style="font-weight:650;font-size:0.98rem;">
+                            @Model.HeroProduct.Name
+                        </a>
+                    </div>
+                    <div class="price-stack" style="text-align:right;flex-shrink:0;">
+                        @if (Model.HeroProduct.HasDiscount)
+                        {
+                            <span class="price-old">@Currency.Format(Model.HeroProduct.Price)</span>
+                        }
+                        <span class="price-current">@Currency.Format(Model.HeroProduct.EffectivePrice)</span>
+                    </div>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section id="categories" class="section">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">@L["Home.CategoriesTitle"]</h2>
+                <p class="section-subtitle">@L["Home.CategoriesSubtitle"]</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="/Catalog">@L["Home.ViewAll"] →</a>
+        </div>
+
+        <div class="category-grid">
+            @foreach (var cat in Model.Categories)
+            {
+                <a class="category-card" href="/Catalog?category=@cat.Slug">
+                    <div class="category-icon">
+                        @await Html.PartialAsync("_CategoryIcon", cat.IconName)
+                    </div>
+                    <div>
+                        <h3 class="category-card-title">@cat.Name</h3>
+                        <p class="category-card-desc">@cat.Description</p>
+                        <span class="category-card-count">@L["Home.ItemsCount", cat.ProductCount]</span>
+                    </div>
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+<section id="featured" class="section" style="padding-top:1rem;">
+    <div class="container">
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">@L["Home.FeaturedTitle"]</h2>
+                <p class="section-subtitle">@L["Home.FeaturedSubtitle"]</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" href="/Catalog">@L["Home.ViewAll"] →</a>
+        </div>
+
+        <div class="product-grid">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <article class="product-card">
+                    <a class="product-card-media" href="/Catalog/Details/@product.Slug">
+                        <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        <div class="product-card-badges">
+                            @if (product.HasDiscount)
+                            {
+                                <span class="badge badge-accent">@L["Product.SavePercent", product.DiscountPercent]</span>
+                            }
+                            else
+                            {
+                                <span></span>
+                            }
+
+                            @if (product.StockQuantity <= 0)
+                            {
+                                <span class="badge badge-danger">@L["Stock.OutOfStock"]</span>
+                            }
+                            else if (product.StockQuantity <= Model.LowStockThreshold)
+                            {
+                                <span class="badge badge-warning">@L["Stock.LowStock", product.StockQuantity]</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-success">@L["Stock.InStock"]</span>
+                            }
+                        </div>
+                    </a>
+
+                    <div class="product-card-body">
+                        <div class="product-card-meta">
+                            <span>@product.Brand</span>
+                            <span>@product.CategoryName</span>
+                        </div>
+                        <h3 class="product-card-title">
+                            <a href="/Catalog/Details/@product.Slug">@product.Name</a>
+                        </h3>
+                        <p class="product-card-desc">@product.ShortDescription</p>
+
+                        <div class="product-card-footer">
+                            <div class="price-stack">
+                                @if (product.HasDiscount)
+                                {
+                                    <span class="price-old">@Currency.Format(product.Price)</span>
+                                }
+                                <span class="price-current">@Currency.Format(product.EffectivePrice)</span>
+                            </div>
+                            <a class="btn btn-secondary btn-sm" href="/Catalog/Details/@product.Slug">
+                                @L["Catalog.ViewDetails"]
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="section" style="padding-top:1rem;">
+    <div class="container">
+        <div class="trust-grid">
+            <div class="trust-card">
+                <div class="trust-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <polyline points="9 12 11 14 15 10"></polyline>
+                    </svg>
+                </div>
+                <h3 class="trust-title">@L["Home.TrustWarrantyTitle"]</h3>
+                <p class="trust-desc">@L["Home.TrustWarrantyDesc"]</p>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13"></rect>
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                    </svg>
+                </div>
+                <h3 class="trust-title">@L["Home.TrustDeliveryTitle"]</h3>
+                <p class="trust-desc">@L["Home.TrustDeliveryDesc"]</p>
+            </div>
+
+            <div class="trust-card">
+                <div class="trust-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                        <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                </div>
+                <h3 class="trust-title">@L["Home.TrustPaymentTitle"]</h3>
+                <p class="trust-desc">@L["Home.TrustPaymentDesc"]</p>
+            </div>
+        </div>
+    </div>
+</section>
