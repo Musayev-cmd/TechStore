@@ -1,0 +1,158 @@
+@model OrderHistoryViewModel
+@{
+    var statusFilters = new[]
+    {
+        (Value: (string?)null, Label: L["Orders.FilterAll"].Value),
+        (Value: nameof(OrderStatus.Pending), Label: L["OrderStatus.Pending"].Value),
+        (Value: nameof(OrderStatus.Paid), Label: L["OrderStatus.Paid"].Value),
+        (Value: nameof(OrderStatus.Processing), Label: L["OrderStatus.Processing"].Value),
+        (Value: nameof(OrderStatus.Shipped), Label: L["OrderStatus.Shipped"].Value),
+        (Value: nameof(OrderStatus.Delivered), Label: L["OrderStatus.Delivered"].Value),
+        (Value: nameof(OrderStatus.Cancelled), Label: L["OrderStatus.Cancelled"].Value)
+    };
+}
+
+<section class="page-banner">
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="@L["Product.BreadcrumbLabel"]">
+            <a asp-controller="Home" asp-action="Index">@L["Nav.Home"]</a>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <a asp-controller="Account" asp-action="Profile">@L["Nav.Account"]</a>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span aria-current="page">@L["Orders.Title"]</span>
+        </nav>
+
+        <div class="page-banner-head">
+            <div>
+                <h1 class="page-banner-title">@L["Orders.Title"]</h1>
+                <p class="page-banner-subtitle">@L["Orders.Subtitle"]</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section account-section">
+    <div class="container">
+        <div class="account-layout">
+            @await Html.PartialAsync("_AccountNav")
+
+            <div class="account-main">
+                @if (Model.TotalCount > 0)
+                {
+                    <div class="status-filter-pills" role="navigation" aria-label="@L["Orders.Title"]">
+                        @foreach (var filter in statusFilters)
+                        {
+                            var isActive = string.Equals(Model.StatusFilter, filter.Value, StringComparison.OrdinalIgnoreCase);
+                            <a class="status-pill @(isActive ? "is-active" : "")"
+                               asp-controller="Account"
+                               asp-action="Orders"
+                               asp-route-status="@filter.Value">
+                                @filter.Label
+                            </a>
+                        }
+                    </div>
+                }
+
+                @if (Model.Orders.Count == 0)
+                {
+                    <div class="catalog-empty">
+                        <div class="catalog-empty-icon" aria-hidden="true">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                        </div>
+                        <h2 class="catalog-empty-title">@L["Orders.EmptyTitle"]</h2>
+                        <p class="catalog-empty-desc">
+                            @(string.IsNullOrWhiteSpace(Model.StatusFilter)
+                                ? L["Orders.EmptyDesc"]
+                                : L["Orders.EmptyFilteredDesc"])
+                        </p>
+                        @if (string.IsNullOrWhiteSpace(Model.StatusFilter))
+                        {
+                            <a class="btn btn-primary btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ExploreNow"]</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary btn-sm" asp-controller="Account" asp-action="Orders">@L["Orders.FilterAll"]</a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="orders-list">
+                        @foreach (var order in Model.Orders)
+                        {
+                            var badgeClass = order.Status switch
+                            {
+                                OrderStatus.Paid or OrderStatus.Delivered => "badge-success",
+                                OrderStatus.Processing or OrderStatus.Shipped => "badge-accent",
+                                OrderStatus.Cancelled => "badge-danger",
+                                _ => "badge-warning"
+                            };
+                            var progressPct = order.StatusStep >= 0 ? order.StatusStep * 25 : 0;
+
+                            <article class="order-card">
+                                <div class="order-card-head">
+                                    <div class="order-card-id">
+                                        <a class="order-number-link mono"
+                                           asp-controller="Account"
+                                           asp-action="OrderDetails"
+                                           asp-route-orderNumber="@order.OrderNumber">
+                                            @order.OrderNumber
+                                        </a>
+                                        <span class="order-date mono">
+                                            @L["Orders.PlacedOn"] @order.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC
+                                        </span>
+                                    </div>
+                                    <span class="badge @badgeClass">
+                                        <span class="status-dot" aria-hidden="true"></span>
+                                        @L[order.Status.GetStatusResourceKey()]
+                                    </span>
+                                </div>
+
+                                <div class="order-card-body">
+                                    <div class="order-preview-thumbs">
+                                        @foreach (var img in order.PreviewImages)
+                                        {
+                                            <div class="order-preview-thumb">
+                                                <img src="@img" alt="" loading="lazy" />
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="order-preview-info">
+                                        <div class="order-preview-names">
+                                            @string.Join(", ", order.PreviewNames)
+                                        </div>
+                                        <div class="order-preview-count mono">
+                                            @L["Orders.ItemsSummary", order.ItemCount]
+                                        </div>
+                                    </div>
+
+                                    <div class="order-card-right">
+                                        <div class="order-card-total mono">@order.FormattedTotal</div>
+                                        <a class="btn btn-secondary btn-sm"
+                                           asp-controller="Account"
+                                           asp-action="OrderDetails"
+                                           asp-route-orderNumber="@order.OrderNumber">
+                                            @L["Orders.ViewDetails"] →
+                                        </a>
+                                    </div>
+                                </div>
+
+                                @if (order.Status != OrderStatus.Cancelled)
+                                {
+                                    <div class="order-mini-progress" aria-hidden="true">
+                                        <div class="order-mini-progress-fill" style="width: @progressPct%;"></div>
+                                    </div>
+                                }
+                            </article>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

@@ -21,7 +21,8 @@
         currencySymbol = store.CurrencySymbol,
         freeShippingThreshold = store.FreeShippingThreshold,
         flatShippingFee = store.FlatShippingFee,
-        lowStockThreshold = store.LowStockThreshold
+        lowStockThreshold = store.LowStockThreshold,
+        isAuthenticated = User.Identity?.IsAuthenticated ?? false
     });
     var clientI18nJson = JsonSerializer.Serialize(clientI18n);
 }
@@ -77,6 +78,7 @@
     <script src="~/js/core.js" asp-append-version="true" defer></script>
     <script src="~/js/theme.js" asp-append-version="true" defer></script>
     <script src="~/js/nav.js" asp-append-version="true" defer></script>
+    <script src="~/js/cart.js" asp-append-version="true" defer></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

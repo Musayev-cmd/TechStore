@@ -1,0 +1,157 @@
+@model ProfilePageViewModel
+@{
+    var successMessage = TempData["AccountSuccess"] as string;
+}
+
+<section class="page-banner">
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="@L["Product.BreadcrumbLabel"]">
+            <a asp-controller="Home" asp-action="Index">@L["Nav.Home"]</a>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span aria-current="page">@L["Account.ProfileTitle"]</span>
+        </nav>
+
+        <div class="page-banner-head">
+            <div>
+                <h1 class="page-banner-title">@L["Account.ProfileTitle"]</h1>
+                <p class="page-banner-subtitle">@L["Account.ProfileSubtitle"]</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section account-section">
+    <div class="container">
+        <div class="account-layout">
+            @await Html.PartialAsync("_AccountNav")
+
+            <div class="account-main">
+                @if (!string.IsNullOrWhiteSpace(successMessage))
+                {
+                    <div class="alert alert-success" role="status">
+                        <span>@successMessage</span>
+                    </div>
+                }
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @foreach (var err in ViewData.ModelState[string.Empty]!.Errors)
+                        {
+                            <div>@err.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <div class="account-stats-grid">
+                    <div class="stat-tile">
+                        <span class="stat-tile-label">@L["Account.StatOrders"]</span>
+                        <strong class="stat-tile-value mono">@Model.TotalOrdersCount</strong>
+                    </div>
+                    <div class="stat-tile">
+                        <span class="stat-tile-label">@L["Account.StatActiveOrders"]</span>
+                        <strong class="stat-tile-value mono">@Model.ActiveOrdersCount</strong>
+                    </div>
+                    <div class="stat-tile">
+                        <span class="stat-tile-label">@L["Account.StatMemberSince"]</span>
+                        <strong class="stat-tile-value mono">@Model.MemberSinceUtc.ToString("yyyy-MM-dd")</strong>
+                    </div>
+                </div>
+
+                <form class="panel-card" asp-controller="Account" asp-action="Profile" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <h2 class="panel-heading">@L["Account.PersonalInfo"]</h2>
+                    <div class="form-grid">
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Profile.FullName">@L["Account.FullName"]</label>
+                            <input class="input" asp-for="Profile.FullName" autocomplete="name" />
+                            <span class="field-error" asp-validation-for="Profile.FullName"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" for="account-email-readonly">@L["Account.Email"]</label>
+                            <input id="account-email-readonly" class="input" type="email" value="@Model.Email" readonly disabled />
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Profile.PhoneNumber">@L["Account.Phone"]</label>
+                            <input class="input" asp-for="Profile.PhoneNumber" type="tel" autocomplete="tel" placeholder="@L["Checkout.PhonePlaceholder"]" />
+                            <span class="field-error" asp-validation-for="Profile.PhoneNumber"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Profile.PreferredLanguage">@L["Account.PreferredLanguage"]</label>
+                            <select class="select" asp-for="Profile.PreferredLanguage">
+                                <option value="en">English (EN)</option>
+                                <option value="ru">Русский (RU)</option>
+                                <option value="az">Azərbaycan (AZ)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h2 class="panel-heading" style="margin-top:2rem;">@L["Account.ShippingAddress"]</h2>
+                    <div class="form-grid">
+                        <div class="form-field form-field-full">
+                            <label class="field-label" asp-for="Profile.DefaultShippingAddress">@L["Checkout.Address"]</label>
+                            <input class="input" asp-for="Profile.DefaultShippingAddress" autocomplete="street-address" placeholder="@L["Checkout.AddressPlaceholder"]" />
+                            <span class="field-error" asp-validation-for="Profile.DefaultShippingAddress"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Profile.DefaultCity">@L["Checkout.City"]</label>
+                            <input class="input" asp-for="Profile.DefaultCity" autocomplete="address-level2" placeholder="@L["Checkout.CityPlaceholder"]" />
+                            <span class="field-error" asp-validation-for="Profile.DefaultCity"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Profile.DefaultPostalCode">@L["Checkout.PostalCode"]</label>
+                            <input class="input" asp-for="Profile.DefaultPostalCode" autocomplete="postal-code" placeholder="@L["Checkout.PostalCodePlaceholder"]" />
+                            <span class="field-error" asp-validation-for="Profile.DefaultPostalCode"></span>
+                        </div>
+
+                        <div class="form-field form-field-full">
+                            <label class="field-label" asp-for="Profile.DefaultCountry">@L["Checkout.Country"]</label>
+                            <input class="input" asp-for="Profile.DefaultCountry" autocomplete="country-name" placeholder="@L["Checkout.CountryPlaceholder"]" />
+                            <span class="field-error" asp-validation-for="Profile.DefaultCountry"></span>
+                        </div>
+                    </div>
+
+                    <div class="panel-actions">
+                        <button type="submit" class="btn btn-primary">@L["Account.SaveProfile"]</button>
+                    </div>
+                </form>
+
+                <form class="panel-card" asp-controller="Account" asp-action="ChangePassword" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <h2 class="panel-heading">@L["Account.SecurityHeading"]</h2>
+                    <div class="form-grid">
+                        <div class="form-field form-field-full">
+                            <label class="field-label" asp-for="Password.CurrentPassword">@L["Account.CurrentPassword"]</label>
+                            <input class="input" asp-for="Password.CurrentPassword" type="password" autocomplete="current-password" />
+                            <span class="field-error" asp-validation-for="Password.CurrentPassword"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Password.NewPassword">@L["Account.NewPassword"]</label>
+                            <input class="input" asp-for="Password.NewPassword" type="password" autocomplete="new-password" />
+                            <span class="field-hint">@L["Account.PasswordHint"]</span>
+                            <span class="field-error" asp-validation-for="Password.NewPassword"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="field-label" asp-for="Password.ConfirmNewPassword">@L["Account.ConfirmNewPassword"]</label>
+                            <input class="input" asp-for="Password.ConfirmNewPassword" type="password" autocomplete="new-password" />
+                            <span class="field-error" asp-validation-for="Password.ConfirmNewPassword"></span>
+                        </div>
+                    </div>
+
+                    <div class="panel-actions">
+                        <button type="submit" class="btn btn-secondary">@L["Account.UpdatePassword"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

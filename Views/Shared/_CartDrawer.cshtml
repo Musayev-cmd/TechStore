@@ -1,7 +1,8 @@
 <aside id="cart-drawer" class="cart-drawer" data-drawer="cart" aria-hidden="true" aria-label="@L["Cart.Title"]">
     <div class="cart-drawer-header">
-        <div>
-            <h2 style="font-size:1.05rem;">@L["Cart.Title"]</h2>
+        <div class="cart-drawer-heading">
+            <h2 class="cart-drawer-title">@L["Cart.Title"]</h2>
+            <span class="badge badge-neutral mono" data-cart-drawer-count hidden>0</span>
         </div>
         <button type="button" class="btn-icon" data-drawer-close aria-label="@L["Cart.Close"]">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
@@ -9,6 +10,13 @@
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
         </button>
+    </div>
+
+    <div class="cart-shipping-strip" data-cart-shipping-strip hidden>
+        <div class="cart-shipping-label" data-cart-shipping-text></div>
+        <div class="cart-shipping-bar" aria-hidden="true">
+            <div class="cart-shipping-fill" data-cart-shipping-fill style="width: 0%;"></div>
+        </div>
     </div>
 
     <div class="cart-drawer-body" data-cart-drawer-body>
@@ -20,20 +28,30 @@
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                 </svg>
             </div>
-            <h3 style="font-size:1rem;">@L["Cart.EmptyTitle"]</h3>
-            <p style="font-size:0.875rem;color:var(--text-secondary);max-width:260px;">@L["Cart.EmptyDesc"]</p>
-            <a class="btn btn-primary btn-sm" href="/Catalog" style="margin-top:0.5rem;">@L["Cart.ContinueShopping"]</a>
+            <h3 class="cart-empty-title">@L["Cart.EmptyTitle"]</h3>
+            <p class="cart-empty-desc">@L["Cart.EmptyDesc"]</p>
+            <a class="btn btn-primary btn-sm" href="/Catalog" data-drawer-close>@L["Cart.ContinueShopping"]</a>
         </div>
     </div>
 
     <div class="cart-drawer-footer" data-cart-drawer-footer hidden>
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="color:var(--text-secondary);font-size:0.9rem;">@L["Cart.Subtotal"]</span>
-            <strong class="mono" data-cart-subtotal>@Currency.Format(0m)</strong>
+        <div class="cart-summary-rows">
+            <div class="cart-summary-row">
+                <span>@L["Cart.Subtotal"]</span>
+                <span class="mono" data-cart-subtotal>@Currency.Format(0m)</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>@L["Cart.Shipping"]</span>
+                <span class="mono" data-cart-shipping>@L["Cart.FreeShipping"]</span>
+            </div>
+            <div class="cart-summary-row is-total">
+                <span>@L["Cart.Total"]</span>
+                <strong class="mono" data-cart-total>@Currency.Format(0m)</strong>
+            </div>
         </div>
-        <div style="display:flex;gap:0.6rem;">
-            <a class="btn btn-secondary" href="/Cart" style="flex:1;">@L["Cart.ViewFullCart"]</a>
-            <a class="btn btn-primary" href="/Checkout" style="flex:1;">@L["Cart.Checkout"]</a>
+        <div class="cart-drawer-actions">
+            <a class="btn btn-secondary" href="/Cart">@L["Cart.ViewFullCart"]</a>
+            <a class="btn btn-primary" href="/Checkout">@L["Cart.Checkout"]</a>
         </div>
     </div>
 </aside>

@@ -125,6 +125,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 // Domain services
 builder.Services.AddSingleton<ICurrencyFormatter, CurrencyFormatter>();
 builder.Services.AddScoped<IProductCatalogService, ProductCatalogService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IStripeCheckoutService, StripeCheckoutService>();
 
 // Security: CSRF protection for MVC & fetch API mutations
 builder.Services.AddAntiforgery(options =>
@@ -138,6 +140,10 @@ builder.Services.AddAntiforgery(options =>
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+})
+.AddDataAnnotationsLocalization(options =>
+{
+    options.DataAnnotationLocalizerProvider = (_, factory) => factory.Create(typeof(SharedResource));
 });
 
 var app = builder.Build();

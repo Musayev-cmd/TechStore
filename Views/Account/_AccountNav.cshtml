@@ -1,0 +1,44 @@
+@using TechStore.Data
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+    var isAdmin = User.IsInRole(DbSeeder.AdminRole);
+}
+<aside class="account-nav-card" aria-label="@L["Account.NavHeading"]">
+    <div class="account-nav-title mono">@L["Account.NavHeading"]</div>
+    <nav class="account-nav-list">
+        <a class="account-nav-link @(currentAction == "Profile" || currentAction == "ChangePassword" ? "is-active" : "")"
+           asp-controller="Account" asp-action="Profile">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>@L["Nav.Profile"]</span>
+        </a>
+        <a class="account-nav-link @(currentAction == "Orders" || currentAction == "OrderDetails" ? "is-active" : "")"
+           asp-controller="Account" asp-action="Orders">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>@L["Nav.Orders"]</span>
+        </a>
+        @if (isAdmin)
+        {
+            <a class="account-nav-link" href="/Admin">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>@L["Nav.Admin"]</span>
+            </a>
+        }
+    </nav>
+
+    <form class="account-nav-logout" method="post" action="/Account/Logout">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;">@L["Nav.SignOut"]</button>
+    </form>
+</aside>

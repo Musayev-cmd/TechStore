@@ -1,0 +1,233 @@
+@model OrderDetailViewModel
+@{
+    var badgeClass = Model.Status switch
+    {
+        OrderStatus.Paid or OrderStatus.Delivered => "badge-success",
+        OrderStatus.Processing or OrderStatus.Shipped => "badge-accent",
+        OrderStatus.Cancelled => "badge-danger",
+        _ => "badge-warning"
+    };
+
+    var steps = new[]
+    {
+        (Step: 0, Key: "OrderStatus.Pending"),
+        (Step: 1, Key: "OrderStatus.Paid"),
+        (Step: 2, Key: "OrderStatus.Processing"),
+        (Step: 3, Key: "OrderStatus.Shipped"),
+        (Step: 4, Key: "OrderStatus.Delivered")
+    };
+}
+
+<section class="page-banner">
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="@L["Product.BreadcrumbLabel"]">
+            <a asp-controller="Home" asp-action="Index">@L["Nav.Home"]</a>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <a asp-controller="Account" asp-action="Orders">@L["Orders.Title"]</a>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span class="mono" aria-current="page">@Model.OrderNumber</span>
+        </nav>
+
+        <div class="page-banner-head">
+            <div>
+                <h1 class="page-banner-title mono">@Model.OrderNumber</h1>
+                <p class="page-banner-subtitle">
+                    @L["Orders.PlacedOn"] @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC
+                </p>
+            </div>
+            <a class="btn btn-secondary btn-sm" asp-controller="Account" asp-action="Orders">
+                ← @L["Orders.BackToOrders"]
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section account-section">
+    <div class="container">
+        <div class="account-layout">
+            @await Html.PartialAsync("_AccountNav")
+
+            <div class="account-main"
+                 data-order-tracker
+                 data-order-number="@Model.OrderNumber"
+                 data-poll-url="/Account/OrderStatus/@Uri.EscapeDataString(Model.OrderNumber)"
+                 data-current-status="@Model.Status"
+                 data-is-terminal="@(Model.IsTerminal ? "true" : "false")">
+
+                <div class="panel-card tracker-card">
+                    <div class="tracker-head">
+                        <div>
+                            <h2 class="panel-heading" style="margin:0;padding:0;border:0;">@L["Orders.LiveTracker"]</h2>
+                            <div class="tracker-updated mono">
+                                @L["Orders.LastUpdated"]:
+                                <span data-tracker-updated>@Model.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC</span>
+                            </div>
+                        </div>
+
+                        <div class="tracker-head-right">
+                            <span class="badge @badgeClass" data-order-status-badge>
+                                <span class="status-dot" aria-hidden="true"></span>
+                                <span data-order-status-text>@L[Model.Status.GetStatusResourceKey()]</span>
+                            </span>
+                            @if (!Model.IsTerminal)
+                            {
+                                <button type="button" class="btn btn-secondary btn-sm" data-tracker-refresh>
+                                    @L["Orders.RefreshStatus"]
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    @if (Model.IsCancelled)
+                    {
+                        <div class="alert alert-danger" style="margin-top:1.25rem;margin-bottom:0;" data-tracker-cancelled>
+                            <span>@L["Orders.CancelledNotice"]</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <ol class="order-stepper" data-order-stepper>
+                            @foreach (var s in steps)
+                            {
+                                var isDone = Model.StatusStep > s.Step;
+                                var isCurrent = Model.StatusStep == s.Step;
+                                <li class="order-step @(isDone ? "is-done" : "") @(isCurrent ? "is-current" : "")"
+                                    data-step-index="@s.Step">
+                                    <span class="order-step-node mono" aria-hidden="true">@(s.Step + 1)</span>
+                                    <span class="order-step-label">@L[s.Key]</span>
+                                </li>
+                            }
+                        </ol>
+
+                        <div class="alert alert-danger" style="margin-top:1.25rem;margin-bottom:0;" data-tracker-cancelled hidden>
+                            <span>@L["Orders.CancelledNotice"]</span>
+                        </div>
+
+                        @if (Model.Status == OrderStatus.Pending)
+                        {
+                            <div class="alert alert-warning" style="margin-top:1rem;margin-bottom:0;" data-tracker-pending-note>
+                                <span>@L["Orders.PendingPaymentNotice"]</span>
+                            </div>
+                        }
+                    }
+
+                    @if (!Model.IsTerminal)
+                    {
+                        <div class="live-poll-indicator mono" data-poll-indicator style="margin-top:1rem;">
+                            <span class="pulse-dot" aria-hidden="true"></span>
+                            <span>@L["Orders.LivePollingActive"]</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="panel-card">
+                    <h2 class="panel-heading">@L["Orders.ItemsHeading"]</h2>
+                    <ul class="receipt-items">
+                        @foreach (var item in Model.Items)
+                        {
+                            <li class="receipt-item">
+                                <div class="receipt-item-thumb">
+                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" />
+                                    }
+                                </div>
+                                <div class="receipt-item-info">
+                                    <div class="receipt-item-name">
+                                        @if (!string.IsNullOrWhiteSpace(item.ProductSlug))
+                                        {
+                                            <a href="/Catalog/Details/@item.ProductSlug">@item.ProductName</a>
+                                        }
+                                        else
+                                        {
+                                            @item.ProductName
+                                        }
+                                    </div>
+                                    <div class="receipt-item-meta mono">
+                                        <span>@item.ProductSku</span>
+                                        <span>·</span>
+                                        <span>@L["Orders.QuantityLabel", item.Quantity]</span>
+                                        <span>·</span>
+                                        <span>@item.FormattedUnitPrice</span>
+                                    </div>
+                                </div>
+                                <div class="receipt-item-total mono">@item.FormattedLineTotal</div>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="summary-rows" style="margin-top:1.25rem;">
+                        <div class="summary-row">
+                            <span>@L["Cart.Subtotal"]</span>
+                            <span class="mono">@Model.FormattedSubtotal</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>@L["Cart.Shipping"]</span>
+                            <span class="mono @(Model.IsFreeShipping ? "text-success" : "")">@Model.FormattedShipping</span>
+                        </div>
+                        <div class="summary-row is-total">
+                            <span>@L["Cart.Total"]</span>
+                            <strong class="mono">@Model.FormattedTotal</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-details-grid">
+                    <div class="panel-card">
+                        <h2 class="panel-heading">@L["Orders.ShippingInfo"]</h2>
+                        <dl class="detail-list">
+                            <div>
+                                <dt>@L["Checkout.FullName"]</dt>
+                                <dd>@Model.CustomerName</dd>
+                            </div>
+                            <div>
+                                <dt>@L["Checkout.Address"]</dt>
+                                <dd>@Model.ShippingAddress</dd>
+                            </div>
+                            <div>
+                                <dt>@L["Checkout.City"] / @L["Checkout.PostalCode"]</dt>
+                                <dd>@Model.ShippingCity, @Model.ShippingPostalCode</dd>
+                            </div>
+                            <div>
+                                <dt>@L["Checkout.Country"]</dt>
+                                <dd>@Model.ShippingCountry</dd>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                            {
+                                <div>
+                                    <dt>@L["Orders.OrderNotes"]</dt>
+                                    <dd>@Model.Notes</dd>
+                                </div>
+                            }
+                        </dl>
+                    </div>
+
+                    <div class="panel-card">
+                        <h2 class="panel-heading">@L["Orders.ContactInfo"]</h2>
+                        <dl class="detail-list">
+                            <div>
+                                <dt>@L["Checkout.Email"]</dt>
+                                <dd class="mono">@Model.CustomerEmail</dd>
+                            </div>
+                            <div>
+                                <dt>@L["Checkout.Phone"]</dt>
+                                <dd class="mono">@Model.CustomerPhone</dd>
+                            </div>
+                            @if (Model.PaidAtUtc.HasValue)
+                            {
+                                <div>
+                                    <dt>@L["Orders.PaidOn"]</dt>
+                                    <dd class="mono" data-tracker-paid-at>@Model.PaidAtUtc.Value.ToString("yyyy-MM-dd HH:mm") UTC</dd>
+                                </div>
+                            }
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/order-tracker.js" asp-append-version="true" defer></script>
+}

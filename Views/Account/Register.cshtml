@@ -1,0 +1,65 @@
+@model RegisterViewModel
+
+<section class="section auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="auth-title">@L["Account.RegisterTitle"]</h1>
+                <p class="auth-subtitle">@L["Account.RegisterSubtitle"]</p>
+            </div>
+
+            <form asp-controller="Account" asp-action="Register" method="post" novalidate class="auth-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @foreach (var err in ViewData.ModelState[string.Empty]!.Errors)
+                        {
+                            <div>@err.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="FullName">@L["Account.FullName"]</label>
+                    <input class="input" asp-for="FullName" autocomplete="name" placeholder="@L["Checkout.FullNamePlaceholder"]" />
+                    <span class="field-error" asp-validation-for="FullName"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="Email">@L["Account.Email"]</label>
+                    <input class="input" asp-for="Email" type="email" autocomplete="email" placeholder="@L["Checkout.EmailPlaceholder"]" />
+                    <span class="field-error" asp-validation-for="Email"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="PhoneNumber">@L["Account.Phone"]</label>
+                    <input class="input" asp-for="PhoneNumber" type="tel" autocomplete="tel" placeholder="@L["Checkout.PhonePlaceholder"]" />
+                    <span class="field-error" asp-validation-for="PhoneNumber"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="Password">@L["Account.Password"]</label>
+                    <input class="input" asp-for="Password" type="password" autocomplete="new-password" />
+                    <span class="field-hint">@L["Account.PasswordHint"]</span>
+                    <span class="field-error" asp-validation-for="Password"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="ConfirmPassword">@L["Account.ConfirmPassword"]</label>
+                    <input class="input" asp-for="ConfirmPassword" type="password" autocomplete="new-password" />
+                    <span class="field-error" asp-validation-for="ConfirmPassword"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg auth-submit">@L["Account.RegisterSubmit"]</button>
+            </form>
+
+            <div class="auth-footer">
+                <span>@L["Account.HaveAccount"]</span>
+                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">@L["Nav.SignIn"]</a>
+            </div>
+        </div>
+    </div>
+</section>

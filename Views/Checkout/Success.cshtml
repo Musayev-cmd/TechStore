@@ -1,0 +1,179 @@
+@model CheckoutSuccessViewModel?
+@{
+    var isPending = Model is not null && Model.Status == OrderStatus.Pending;
+    var isPaid = Model is not null && Model.Status is OrderStatus.Paid or OrderStatus.Processing or OrderStatus.Shipped or OrderStatus.Delivered;
+    var statusBadgeClass = Model?.Status switch
+    {
+        OrderStatus.Paid or OrderStatus.Delivered => "badge-success",
+        OrderStatus.Processing or OrderStatus.Shipped => "badge-accent",
+        OrderStatus.Cancelled => "badge-danger",
+        _ => "badge-warning"
+    };
+}
+
+<section class="section">
+    <div class="container">
+        @if (Model is null)
+        {
+            <div class="status-card">
+                <div class="status-icon is-warning" aria-hidden="true">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <h1 class="status-card-title">@L["Checkout.SuccessTitle"]</h1>
+                <p class="status-card-desc">@L["Checkout.OrderNotFound"]</p>
+                <div class="status-card-actions">
+                    <a class="btn btn-primary" asp-controller="Catalog" asp-action="Index">@L["Cart.ContinueShopping"]</a>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a class="btn btn-secondary" asp-controller="Account" asp-action="Orders">@L["Checkout.ViewOrderHistory"]</a>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="checkout-result-wrap"
+                 data-checkout-success
+                 data-clear-local-cart="@(isPaid ? "true" : "false")"
+                 data-poll-url="@(isPending ? $"/Checkout/Status?orderNumber={Uri.EscapeDataString(Model.OrderNumber)}&sessionId={Uri.EscapeDataString(Model.SessionId ?? string.Empty)}" : string.Empty)"
+                 data-order-number="@Model.OrderNumber">
+
+                <div class="status-hero-card">
+                    <div class="status-icon @(isPaid ? "is-success" : "is-pending")" data-success-icon aria-hidden="true">
+                        @if (isPaid)
+                        {
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        }
+                    </div>
+
+                    <h1 class="status-card-title" data-success-title>
+                        @(isPending ? L["Checkout.SuccessPendingTitle"] : L["Checkout.SuccessTitle"])
+                    </h1>
+                    <p class="status-card-desc" data-success-subtitle>
+                        @(isPending ? L["Checkout.SuccessPendingSubtitle"] : L["Checkout.SuccessSubtitle"])
+                    </p>
+
+                    <div class="order-meta-pills">
+                        <div class="meta-pill">
+                            <span class="meta-pill-label">@L["Checkout.OrderNumber"]</span>
+                            <strong class="mono">@Model.OrderNumber</strong>
+                        </div>
+                        <div class="meta-pill">
+                            <span class="meta-pill-label">@L["Checkout.PaymentStatus"]</span>
+                            <span class="badge @statusBadgeClass" data-order-status-badge>
+                                <span class="status-dot" aria-hidden="true"></span>
+                                <span data-order-status-text>@L[Model.Status.GetStatusResourceKey()]</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    @if (isPending)
+                    {
+                        <div class="live-poll-indicator mono" data-poll-indicator>
+                            <span class="pulse-dot" aria-hidden="true"></span>
+                            <span>@L["Checkout.AwaitingWebhook"]</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="result-details-grid">
+                    <div class="panel-card">
+                        <h2 class="panel-heading">@L["Orders.ItemsHeading"]</h2>
+                        <ul class="receipt-items">
+                            @foreach (var item in Model.Items)
+                            {
+                                <li class="receipt-item">
+                                    <div class="receipt-item-thumb">
+                                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" />
+                                        }
+                                    </div>
+                                    <div class="receipt-item-info">
+                                        <div class="receipt-item-name">@item.ProductName</div>
+                                        <div class="receipt-item-meta mono">
+                                            <span>@item.ProductSku</span>
+                                            <span>·</span>
+                                            <span>@L["Orders.QuantityLabel", item.Quantity]</span>
+                                            <span>·</span>
+                                            <span>@item.FormattedUnitPrice</span>
+                                        </div>
+                                    </div>
+                                    <div class="receipt-item-total mono">@item.FormattedLineTotal</div>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="summary-rows" style="margin-top:1.25rem;">
+                            <div class="summary-row">
+                                <span>@L["Cart.Subtotal"]</span>
+                                <span class="mono">@Model.FormattedSubtotal</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>@L["Cart.Shipping"]</span>
+                                <span class="mono @(Model.IsFreeShipping ? "text-success" : "")">@Model.FormattedShipping</span>
+                            </div>
+                            <div class="summary-row is-total">
+                                <span>@L["Cart.Total"]</span>
+                                <strong class="mono">@Model.FormattedTotal</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <h2 class="panel-heading">@L["Checkout.ShippingTo"]</h2>
+                        <dl class="detail-list">
+                            <div>
+                                <dt>@L["Checkout.FullName"]</dt>
+                                <dd>@Model.CustomerName</dd>
+                            </div>
+                            <div>
+                                <dt>@L["Checkout.Email"]</dt>
+                                <dd class="mono">@Model.CustomerEmail</dd>
+                            </div>
+                            <div>
+                                <dt>@L["Checkout.Address"]</dt>
+                                <dd>@Model.ShippingAddress, @Model.ShippingCity, @Model.ShippingPostalCode, @Model.ShippingCountry</dd>
+                            </div>
+                        </dl>
+
+                        <div class="status-card-actions" style="margin-top:1.5rem;">
+                            @if (Model.IsAuthenticated)
+                            {
+                                <a class="btn btn-primary" asp-controller="Account" asp-action="OrderDetails" asp-route-orderNumber="@Model.OrderNumber">
+                                    @L["Checkout.TrackOrder"]
+                                </a>
+                                <a class="btn btn-secondary" asp-controller="Account" asp-action="Orders">
+                                    @L["Checkout.ViewOrderHistory"]
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="btn btn-primary" asp-controller="Catalog" asp-action="Index">
+                                    @L["Cart.ContinueShopping"]
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/js/order-tracker.js" asp-append-version="true" defer></script>
+}

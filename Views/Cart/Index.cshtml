@@ -1,0 +1,179 @@
+@model CartViewModel
+@{
+    var cartNotice = TempData["CartNotice"] as string ?? Model.StockNotice;
+}
+
+<section class="page-banner">
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="@L["Product.BreadcrumbLabel"]">
+            <a asp-controller="Home" asp-action="Index">@L["Nav.Home"]</a>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span aria-current="page">@L["Cart.Title"]</span>
+        </nav>
+
+        <div class="page-banner-head">
+            <div>
+                <h1 class="page-banner-title">@L["Cart.Title"]</h1>
+                <p class="page-banner-subtitle">@L["Cart.PageSubtitle"]</p>
+            </div>
+            <div class="cart-banner-actions">
+                <a class="btn btn-secondary btn-sm" asp-controller="Catalog" asp-action="Index">
+                    ← @L["Cart.ContinueShopping"]
+                </a>
+                <button type="button"
+                        class="btn btn-ghost btn-sm"
+                        data-cart-clear
+                        hidden="@(Model.Items.Count == 0)">
+                    @L["Cart.ClearCart"]
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section cart-page-section" data-cart-page>
+    <div class="container">
+        @if (!string.IsNullOrWhiteSpace(cartNotice))
+        {
+            <div class="alert alert-info" role="status">
+                <span>@cartNotice</span>
+            </div>
+        }
+
+        <div data-cart-page-content>
+            @if (Model.Items.Count == 0)
+            {
+                <div class="catalog-empty cart-page-empty">
+                    <div class="catalog-empty-icon" aria-hidden="true">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                    </div>
+                    <h2 class="catalog-empty-title">@L["Cart.EmptyTitle"]</h2>
+                    <p class="catalog-empty-desc">@L["Cart.EmptyDesc"]</p>
+                    <a class="btn btn-primary" asp-controller="Catalog" asp-action="Index">@L["Cart.ContinueShopping"]</a>
+                </div>
+            }
+            else
+            {
+                <div class="cart-page-grid">
+                    <div class="cart-page-items">
+                        <div class="cart-shipping-card @(Model.QualifiesForFreeShipping ? "is-unlocked" : "")">
+                            <div class="cart-shipping-card-row">
+                                <span>
+                                    @if (Model.QualifiesForFreeShipping)
+                                    {
+                                        @L["Cart.FreeShippingUnlocked"]
+                                    }
+                                    else
+                                    {
+                                        @L["Cart.FreeShippingRemaining", Model.FormattedFreeShippingRemaining]
+                                    }
+                                </span>
+                                <span class="mono">@Model.FreeShippingProgressPercent%</span>
+                            </div>
+                            <div class="cart-shipping-bar" aria-hidden="true">
+                                <div class="cart-shipping-fill" style="width: @Model.FreeShippingProgressPercent%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="cart-items-card">
+                            @foreach (var item in Model.Items)
+                            {
+                                <article class="cart-page-item" data-cart-item-id="@item.ProductId">
+                                    <a class="cart-item-thumb" href="@item.ProductUrl">
+                                        <img src="@item.ImageUrl" alt="@item.Name" loading="lazy" />
+                                    </a>
+
+                                    <div class="cart-item-details">
+                                        <div class="cart-item-meta mono">
+                                            <span>@item.Brand</span>
+                                            <span>·</span>
+                                            <span>@item.Sku</span>
+                                        </div>
+                                        <h2 class="cart-item-title">
+                                            <a href="@item.ProductUrl">@item.Name</a>
+                                        </h2>
+                                        <div class="cart-item-unit mono">
+                                            <span>@item.FormattedUnitPrice</span>
+                                            @if (item.HasDiscount)
+                                            {
+                                                <span class="price-old">@item.FormattedOriginalPrice</span>
+                                            }
+                                        </div>
+                                        @if (item.StockState == "low_stock")
+                                        {
+                                            <span class="badge badge-warning" style="width:fit-content;margin-top:0.25rem;">
+                                                @L["Stock.LowStock", item.MaxStock]
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <div class="cart-item-controls">
+                                        <div class="qty-control qty-control-sm">
+                                            <button type="button"
+                                                    class="qty-btn"
+                                                    data-cart-qty-dec="@item.ProductId"
+                                                    aria-label="@L["Product.DecreaseQty"]">
+                                                −
+                                            </button>
+                                            <input type="number"
+                                                   class="qty-input mono"
+                                                   value="@item.Quantity"
+                                                   min="1"
+                                                   max="@item.MaxStock"
+                                                   inputmode="numeric"
+                                                   data-cart-qty-input="@item.ProductId"
+                                                   aria-label="@L["Product.Quantity"]" />
+                                            <button type="button"
+                                                    class="qty-btn"
+                                                    data-cart-qty-inc="@item.ProductId"
+                                                    disabled="@(item.Quantity >= item.MaxStock)"
+                                                    aria-label="@L["Product.IncreaseQty"]">
+                                                +
+                                            </button>
+                                        </div>
+
+                                        <div class="cart-item-total mono">@item.FormattedLineTotal</div>
+
+                                        <button type="button"
+                                                class="btn btn-ghost btn-sm cart-remove-btn"
+                                                data-cart-remove="@item.ProductId">
+                                            @L["Cart.Remove"]
+                                        </button>
+                                    </div>
+                                </article>
+                            }
+                        </div>
+                    </div>
+
+                    <aside class="summary-card">
+                        <h2 class="summary-card-title">@L["Cart.OrderSummary"]</h2>
+                        <div class="summary-rows">
+                            <div class="summary-row">
+                                <span>@L["Cart.Subtotal"] (@L["Cart.ItemsCount", Model.ItemCount])</span>
+                                <span class="mono">@Model.FormattedSubtotal</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>@L["Cart.Shipping"]</span>
+                                <span class="mono @(Model.ShippingAmount == 0m ? "text-success" : "")">@Model.FormattedShipping</span>
+                            </div>
+                            <div class="summary-row is-total">
+                                <span>@L["Cart.Total"]</span>
+                                <strong class="mono">@Model.FormattedTotal</strong>
+                            </div>
+                        </div>
+
+                        <a class="btn btn-primary btn-lg summary-cta" asp-controller="Checkout" asp-action="Index">
+                            @L["Cart.Checkout"] →
+                        </a>
+
+                        <p class="summary-note">@L["Checkout.SecureNotice"]</p>
+                    </aside>
+                </div>
+            }
+        </div>
+    </div>
+</section>

@@ -1,0 +1,51 @@
+@model LoginViewModel
+
+<section class="section auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1 class="auth-title">@L["Account.LoginTitle"]</h1>
+                <p class="auth-subtitle">@L["Account.LoginSubtitle"]</p>
+            </div>
+
+            <form asp-controller="Account" asp-action="Login" method="post" novalidate class="auth-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @foreach (var err in ViewData.ModelState[string.Empty]!.Errors)
+                        {
+                            <div>@err.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="Email">@L["Account.Email"]</label>
+                    <input class="input" asp-for="Email" type="email" autocomplete="email" placeholder="@L["Checkout.EmailPlaceholder"]" />
+                    <span class="field-error" asp-validation-for="Email"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="Password">@L["Account.Password"]</label>
+                    <input class="input" asp-for="Password" type="password" autocomplete="current-password" />
+                    <span class="field-error" asp-validation-for="Password"></span>
+                </div>
+
+                <label class="checkbox-row">
+                    <input type="checkbox" asp-for="RememberMe" />
+                    <span>@L["Account.RememberMe"]</span>
+                </label>
+
+                <button type="submit" class="btn btn-primary btn-lg auth-submit">@L["Account.LoginSubmit"]</button>
+            </form>
+
+            <div class="auth-footer">
+                <span>@L["Account.NoAccount"]</span>
+                <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">@L["Nav.Register"]</a>
+            </div>
+        </div>
+    </div>
+</section>

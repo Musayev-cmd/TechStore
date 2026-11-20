@@ -59,6 +59,9 @@ public sealed class JsonLocalizationStore
                 kvp.Key.StartsWith("Catalog.", StringComparison.Ordinal) ||
                 kvp.Key.StartsWith("Product.", StringComparison.Ordinal) ||
                 kvp.Key.StartsWith("Theme.", StringComparison.Ordinal) ||
+                kvp.Key.StartsWith("OrderStatus.", StringComparison.Ordinal) ||
+                kvp.Key.StartsWith("Checkout.", StringComparison.Ordinal) ||
+                kvp.Key.StartsWith("Orders.", StringComparison.Ordinal) ||
                 kvp.Key.StartsWith("Common.", StringComparison.Ordinal))
             {
                 result[kvp.Key] = kvp.Value;
