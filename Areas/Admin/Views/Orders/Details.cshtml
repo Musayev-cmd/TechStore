@@ -1,0 +1,232 @@
+@model AdminOrderDetailViewModel
+@{
+    var badgeClass = AdminHelpers.GetOrderBadgeClass(Model.Status);
+    var steps = new[]
+    {
+        (Step: 0, Key: "OrderStatus.Pending"),
+        (Step: 1, Key: "OrderStatus.Paid"),
+        (Step: 2, Key: "OrderStatus.Processing"),
+        (Step: 3, Key: "OrderStatus.Shipped"),
+        (Step: 4, Key: "OrderStatus.Delivered")
+    };
+}
+
+<div class="admin-page-head">
+    <div>
+        <div class="admin-order-title-row">
+            <h1 class="admin-page-title mono">@Model.OrderNumber</h1>
+            <span class="badge @badgeClass">
+                <span class="status-dot" aria-hidden="true"></span>
+                @L[Model.Status.GetStatusResourceKey()]
+            </span>
+        </div>
+        <p class="admin-page-subtitle mono">
+            @L["Orders.PlacedOn"]: @Model.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC
+            · @L["Orders.LastUpdated"]: @Model.UpdatedAtUtc.ToString("yyyy-MM-dd HH:mm") UTC
+        </p>
+    </div>
+    <div class="admin-head-actions">
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+            ← @L["Admin.BackToOrders"]
+        </a>
+    </div>
+</div>
+
+<div class="admin-form-layout">
+    <div class="admin-form-main">
+        <section class="panel-card">
+            <h2 class="panel-heading">@L["Admin.OrderManagement"]</h2>
+
+            @if (Model.IsCancelled)
+            {
+                <div class="alert alert-danger" style="margin-bottom:0;">
+                    <span>@L["Orders.CancelledNotice"]</span>
+                </div>
+            }
+            else
+            {
+                <ol class="admin-stepper">
+                    @foreach (var step in steps)
+                    {
+                        var isDone = Model.StatusStep > step.Step;
+                        var isCurrent = Model.StatusStep == step.Step;
+                        <li class="admin-step @(isDone ? "is-done" : "") @(isCurrent ? "is-current" : "")">
+                            <span class="admin-step-node mono" aria-hidden="true">@(step.Step + 1)</span>
+                            <span class="admin-step-label">@L[step.Key]</span>
+                        </li>
+                    }
+                </ol>
+            }
+        </section>
+
+        <section class="panel-card">
+            <h2 class="panel-heading">@L["Orders.ItemsHeading"]</h2>
+
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>@L["Admin.ColProduct"]</th>
+                            <th>@L["Cart.UnitPrice"]</th>
+                            <th>@L["Product.Quantity"]</th>
+                            <th class="text-right">@L["Cart.LineTotal"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="table-product-cell">
+                                        <div class="table-thumb">
+                                            @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" alt="@item.ProductName" loading="lazy" />
+                                            }
+                                        </div>
+                                        <div class="table-product-meta">
+                                            @if (item.ProductId.HasValue)
+                                            {
+                                                <a class="table-primary-link" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@item.ProductId.Value">
+                                                    @item.ProductName
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="table-primary-text">@item.ProductName</span>
+                                            }
+                                            <span class="table-secondary-text mono">@item.ProductSku</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="mono">@item.FormattedUnitPrice</td>
+                                <td class="mono">@item.Quantity</td>
+                                <td class="text-right mono"><strong>@item.FormattedLineTotal</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="summary-rows" style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border-subtle);">
+                <div class="summary-row">
+                    <span>@L["Cart.Subtotal"]</span>
+                    <span class="mono">@Model.FormattedSubtotal</span>
+                </div>
+                <div class="summary-row">
+                    <span>@L["Cart.Shipping"]</span>
+                    <span class="mono @(Model.IsFreeShipping ? "text-success" : "")">@Model.FormattedShipping</span>
+                </div>
+                <div class="summary-row is-total">
+                    <span>@L["Cart.Total"]</span>
+                    <strong class="mono">@Model.FormattedTotal</strong>
+                </div>
+            </div>
+        </section>
+
+        <div class="admin-two-col">
+            <section class="panel-card">
+                <h2 class="panel-heading">@L["Orders.ShippingInfo"]</h2>
+                <dl class="admin-dl">
+                    <div>
+                        <dt>@L["Checkout.FullName"]</dt>
+                        <dd>@Model.CustomerName</dd>
+                    </div>
+                    <div>
+                        <dt>@L["Checkout.Address"]</dt>
+                        <dd>@Model.ShippingAddress</dd>
+                    </div>
+                    <div>
+                        <dt>@L["Checkout.City"] / @L["Checkout.PostalCode"]</dt>
+                        <dd>@Model.ShippingCity, @Model.ShippingPostalCode</dd>
+                    </div>
+                    <div>
+                        <dt>@L["Checkout.Country"]</dt>
+                        <dd>@Model.ShippingCountry</dd>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.Notes))
+                    {
+                        <div>
+                            <dt>@L["Orders.OrderNotes"]</dt>
+                            <dd>@Model.Notes</dd>
+                        </div>
+                    }
+                </dl>
+            </section>
+
+            <section class="panel-card">
+                <h2 class="panel-heading">@L["Orders.ContactInfo"]</h2>
+                <dl class="admin-dl">
+                    <div>
+                        <dt>@L["Checkout.Email"]</dt>
+                        <dd class="mono">@Model.CustomerEmail</dd>
+                    </div>
+                    <div>
+                        <dt>@L["Checkout.Phone"]</dt>
+                        <dd class="mono">@Model.CustomerPhone</dd>
+                    </div>
+                    <div>
+                        <dt>@L["Orders.PaidOn"]</dt>
+                        <dd class="mono">@(Model.PaidAtUtc.HasValue ? $"{Model.PaidAtUtc.Value:yyyy-MM-dd HH:mm} UTC" : L["Admin.NotRecorded"].Value)</dd>
+                    </div>
+                </dl>
+            </section>
+        </div>
+    </div>
+
+    <aside class="admin-form-side">
+        <div class="panel-card admin-sticky-card">
+            <h2 class="panel-heading">@L["Admin.OrderManagement"]</h2>
+
+            <div class="admin-status-current">
+                <span class="field-label" style="margin-bottom:0.25rem;">@L["Admin.CurrentStatus"]</span>
+                <span class="badge @badgeClass">
+                    <span class="status-dot" aria-hidden="true"></span>
+                    @L[Model.Status.GetStatusResourceKey()]
+                </span>
+            </div>
+
+            @if (Model.IsTerminal)
+            {
+                <div class="alert alert-info" style="margin-top:1rem;margin-bottom:0;">
+                    <span>@L["Admin.OrderTerminalNotice"]</span>
+                </div>
+            }
+            else
+            {
+                <form method="post"
+                      asp-area="Admin"
+                      asp-controller="Orders"
+                      asp-action="UpdateStatus"
+                      asp-route-id="@Model.Id"
+                      class="admin-status-form">
+                    @Html.AntiForgeryToken()
+                    <div class="form-field">
+                        <label class="field-label" for="order-next-status">@L["Admin.ChangeStatusTo"]</label>
+                        <select id="order-next-status" name="status" class="select">
+                            @foreach (var next in Model.AllowedNextStatuses)
+                            {
+                                <option value="@next">@L[next.GetStatusResourceKey()]</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">
+                        @L["Admin.UpdateStatusBtn"]
+                    </button>
+                </form>
+            }
+
+            <h3 class="admin-side-subheading">@L["Admin.OrderPaymentMeta"]</h3>
+            <dl class="admin-dl admin-dl-compact">
+                <div>
+                    <dt>@L["Admin.StripeSession"]</dt>
+                    <dd class="mono admin-break-all">@(string.IsNullOrWhiteSpace(Model.StripeCheckoutSessionId) ? L["Admin.NotRecorded"].Value : Model.StripeCheckoutSessionId)</dd>
+                </div>
+                <div>
+                    <dt>@L["Admin.StripePaymentIntent"]</dt>
+                    <dd class="mono admin-break-all">@(string.IsNullOrWhiteSpace(Model.StripePaymentIntentId) ? L["Admin.NotRecorded"].Value : Model.StripePaymentIntentId)</dd>
+                </div>
+            </dl>
+        </div>
+    </aside>
+</div>

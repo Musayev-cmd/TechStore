@@ -1,0 +1,274 @@
+@using System.Text.Json
+@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.Extensions.Options
+@using TechStore.Options
+@inject IAntiforgery Antiforgery
+@inject JsonLocalizationStore LocalizationStore
+@inject IOptions<StoreOptions> StoreOptionsAccessor
+@{
+    var currentCulture = LocalizationHelper.CurrentCultureCode();
+    var csrfTokens = Antiforgery.GetAndStoreTokens(Context);
+    var clientI18n = LocalizationStore.GetClientDictionary(currentCulture);
+    var store = StoreOptionsAccessor.Value;
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "Dashboard";
+    var pageTitle = ViewData["Title"] is string title && !string.IsNullOrWhiteSpace(title)
+        ? $"{title} — {L["Admin.AreaTitle"]} · {L["Site.Name"]}"
+        : $"{L["Admin.AreaTitle"]} — {L["Site.Name"]}";
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path)
+        ? "/Admin"
+        : $"{Context.Request.Path}{Context.Request.QueryString}";
+
+    var successNotice = TempData["AdminSuccess"] as string;
+    var errorNotice = TempData["AdminError"] as string;
+    var warningNotice = TempData["AdminWarning"] as string;
+
+    var clientConfigJson = JsonSerializer.Serialize(new
+    {
+        culture = currentCulture,
+        currencyCode = store.CurrencyCode,
+        currencySymbol = store.CurrencySymbol,
+        lowStockThreshold = store.LowStockThreshold,
+        maxUploadBytes = ImageService.DefaultMaxFileSizeBytes,
+        isAdmin = true
+    });
+    var clientI18nJson = JsonSerializer.Serialize(clientI18n);
+}
+<!DOCTYPE html>
+<html lang="@currentCulture" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="@csrfTokens.RequestToken" />
+    <title>@pageTitle</title>
+
+    @* Pre-paint Light/Dark theme bootstrap prevents flash on load *@
+    <script>
+        (function () {
+            try {
+                var saved = window.localStorage.getItem("techstore-theme");
+                var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                var theme = saved === "dark" || saved === "light" ? saved : (prefersDark ? "dark" : "light");
+                document.documentElement.setAttribute("data-theme", theme);
+            } catch (e) {
+                document.documentElement.setAttribute("data-theme", "light");
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-body">
+    <a class="skip-link" href="#admin-main-content">@L["Nav.SkipToContent"]</a>
+
+    <div class="admin-shell">
+        <aside id="admin-sidebar" class="admin-sidebar" data-admin-sidebar aria-label="@L["Admin.NavLabel"]">
+            <div class="admin-sidebar-header">
+                <a class="brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <span class="brand-mark" aria-hidden="true">TS</span>
+                    <span>TechStore<span class="brand-dot">.</span></span>
+                </a>
+                <span class="badge badge-accent">@L["Admin.Badge"]</span>
+                <button type="button" class="btn-icon admin-sidebar-close" data-admin-sidebar-close aria-label="@L["Common.Close"]">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="admin-nav" aria-label="@L["Admin.NavLabel"]">
+                <a class="admin-nav-link @(currentController == "Dashboard" ? "is-active" : "")"
+                   asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                        <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                        <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                        <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+                    </svg>
+                    <span>@L["Admin.NavDashboard"]</span>
+                </a>
+
+                <a class="admin-nav-link @(currentController == "Products" ? "is-active" : "")"
+                   asp-area="Admin" asp-controller="Products" asp-action="Index">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    <span>@L["Admin.NavProducts"]</span>
+                </a>
+
+                <a class="admin-nav-link @(currentController == "Categories" ? "is-active" : "")"
+                   asp-area="Admin" asp-controller="Categories" asp-action="Index">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M4 7h16M4 12h16M4 17h10"></path>
+                    </svg>
+                    <span>@L["Admin.NavCategories"]</span>
+                </a>
+
+                <a class="admin-nav-link @(currentController == "Orders" ? "is-active" : "")"
+                   asp-area="Admin" asp-controller="Orders" asp-action="Index">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>@L["Admin.NavOrders"]</span>
+                </a>
+
+                <a class="admin-nav-link @(currentController == "Customers" ? "is-active" : "")"
+                   asp-area="Admin" asp-controller="Customers" asp-action="Index">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>@L["Admin.NavCustomers"]</span>
+                </a>
+            </nav>
+
+            <div class="admin-sidebar-footer">
+                <a class="admin-nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>@L["Admin.BackToStore"]</span>
+                </a>
+
+                <div class="admin-user-box">
+                    <div class="admin-user-label">@L["Admin.SignedInAs"]</div>
+                    <div class="admin-user-email mono">@(User.Identity?.Name ?? string.Empty)</div>
+                    <form method="post" action="/Account/Logout">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;">@L["Nav.SignOut"]</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <div class="admin-workspace">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left">
+                    <button type="button"
+                            class="btn-icon admin-sidebar-toggle"
+                            data-admin-sidebar-open
+                            aria-expanded="false"
+                            aria-controls="admin-sidebar"
+                            aria-label="@L["Admin.OpenSidebar"]">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="4" y1="7" x2="20" y2="7"></line>
+                            <line x1="4" y1="12" x2="20" y2="12"></line>
+                            <line x1="4" y1="17" x2="20" y2="17"></line>
+                        </svg>
+                    </button>
+                    <div class="admin-topbar-title">
+                        <span class="admin-topbar-area mono">@L["Admin.AreaTitle"]</span>
+                        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+                        <span>@(ViewData["Title"] as string ?? L["Admin.DashboardTitle"].Value)</span>
+                    </div>
+                </div>
+
+                <div class="admin-topbar-actions">
+                    <div class="lang-switcher" role="group" aria-label="@L["Language.Label"]">
+                        @foreach (var lang in JsonLocalizationStore.SupportedCultures)
+                        {
+                            var labelKey = lang switch
+                            {
+                                "ru" => "Language.Ru",
+                                "az" => "Language.Az",
+                                _ => "Language.En"
+                            };
+                            <form class="lang-form" asp-area="" asp-controller="Localization" asp-action="SetLanguage" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="culture" value="@lang" />
+                                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                <button type="submit"
+                                        class="lang-btn @(currentCulture == lang ? "is-active" : "")"
+                                        aria-pressed="@(currentCulture == lang ? "true" : "false")">
+                                    @L[labelKey]
+                                </button>
+                            </form>
+                        }
+                    </div>
+
+                    <button type="button"
+                            class="btn-icon theme-toggle"
+                            data-theme-toggle
+                            aria-label="@L["Theme.Toggle"]"
+                            title="@L["Theme.Toggle"]">
+                        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="4"></circle>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                        </svg>
+                    </button>
+
+                    <a class="btn btn-secondary btn-sm admin-topbar-store-btn" asp-area="" asp-controller="Home" asp-action="Index">
+                        @L["Admin.BackToStore"]
+                    </a>
+                </div>
+            </header>
+
+            <main id="admin-main-content" class="admin-main" tabindex="-1">
+                <div class="admin-content">
+                    @if (!string.IsNullOrWhiteSpace(successNotice))
+                    {
+                        <div class="alert alert-success" role="status">
+                            <span>@successNotice</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(warningNotice))
+                    {
+                        <div class="alert alert-warning" role="status">
+                            <span>@warningNotice</span>
+                        </div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(errorNotice))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <span>@errorNotice</span>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="drawer-backdrop" data-admin-backdrop aria-hidden="true"></div>
+
+    <div class="admin-modal" data-confirm-modal hidden role="dialog" aria-modal="true" aria-labelledby="admin-confirm-title">
+        <div class="admin-modal-backdrop" data-confirm-cancel></div>
+        <div class="admin-modal-dialog">
+            <h2 id="admin-confirm-title" class="admin-modal-title">@L["Admin.ConfirmDeleteTitle"]</h2>
+            <p class="admin-modal-message" data-confirm-message></p>
+            <div class="admin-modal-actions">
+                <button type="button" class="btn btn-secondary btn-sm" data-confirm-cancel>@L["Common.Cancel"]</button>
+                <button type="button" class="btn btn-danger btn-sm" data-confirm-accept>@L["Common.Delete"]</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <script>
+        window.TechStoreConfig = @Html.Raw(clientConfigJson);
+        window.TechStoreI18n = @Html.Raw(clientI18nJson);
+    </script>
+    <script src="~/js/core.js" asp-append-version="true" defer></script>
+    <script src="~/js/theme.js" asp-append-version="true" defer></script>
+    <script src="~/js/admin.js" asp-append-version="true" defer></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

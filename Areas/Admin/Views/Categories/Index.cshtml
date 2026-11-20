@@ -1,0 +1,110 @@
+@model AdminCategoryListViewModel
+
+<div class="admin-page-head">
+    <div>
+        <h1 class="admin-page-title">@L["Admin.CategoriesTitle"]</h1>
+        <p class="admin-page-subtitle">@L["Admin.CategoriesSubtitle"]</p>
+    </div>
+    <div class="admin-head-actions">
+        <span class="badge badge-neutral mono">@L["Admin.TotalRecords", Model.Categories.Count]</span>
+        <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="Categories" asp-action="Create">
+            + @L["Admin.AddCategory"]
+        </a>
+    </div>
+</div>
+
+<section class="panel-card admin-section-card">
+    @if (Model.Categories.Count == 0)
+    {
+        <div class="admin-empty-box">
+            <p>@L["Admin.CategoriesEmpty"]</p>
+            <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="Categories" asp-action="Create">+ @L["Admin.AddCategory"]</a>
+        </div>
+    }
+    else
+    {
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>@L["Admin.ColIcon"]</th>
+                        <th>@L["Admin.ColTranslations"]</th>
+                        <th>@L["Admin.FieldSlug"]</th>
+                        <th>@L["Admin.ColProductsCount"]</th>
+                        <th>@L["Admin.ColOrder"]</th>
+                        <th>@L["Admin.ColStatus"]</th>
+                        <th class="text-right">@L["Admin.ColActions"]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <tr>
+                            <td>
+                                <span class="admin-cat-icon-box" aria-hidden="true">
+                                    @await Html.PartialAsync("~/Views/Shared/_CategoryIcon.cshtml", cat.IconName)
+                                </span>
+                            </td>
+                            <td>
+                                <a class="table-primary-link" asp-area="Admin" asp-controller="Categories" asp-action="Edit" asp-route-id="@cat.Id">@cat.LocalizedName</a>
+                                <div class="table-translations">
+                                    <span class="mono">EN:</span> @cat.NameEn
+                                    <span>·</span>
+                                    <span class="mono">RU:</span> @cat.NameRu
+                                    <span>·</span>
+                                    <span class="mono">AZ:</span> @cat.NameAz
+                                </div>
+                            </td>
+                            <td class="mono">@cat.Slug</td>
+                            <td>
+                                <a class="badge badge-neutral mono" asp-area="Admin" asp-controller="Products" asp-action="Index" asp-route-categoryId="@cat.Id">
+                                    @cat.ProductCount
+                                </a>
+                            </td>
+                            <td class="mono">@cat.DisplayOrder</td>
+                            <td>
+                                @if (cat.IsActive)
+                                {
+                                    <span class="badge badge-success">@L["Admin.StatusActive"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-neutral">@L["Admin.StatusInactive"]</span>
+                                }
+                            </td>
+                            <td class="text-right">
+                                <div class="table-actions">
+                                    <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Categories" asp-action="Edit" asp-route-id="@cat.Id">
+                                        @L["Common.Edit"]
+                                    </a>
+                                    @if (cat.ProductCount > 0)
+                                    {
+                                        <button type="button"
+                                                class="btn btn-secondary btn-sm"
+                                                disabled
+                                                title="@L["Admin.CategoryDeleteProtectedTitle"]">
+                                            @L["Common.Delete"]
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <form method="post"
+                                              asp-area="Admin"
+                                              asp-controller="Categories"
+                                              asp-action="Delete"
+                                              asp-route-id="@cat.Id"
+                                              data-confirm-form
+                                              data-confirm-message="@L["Admin.DeleteCategoryConfirm", cat.LocalizedName]">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm">@L["Common.Delete"]</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

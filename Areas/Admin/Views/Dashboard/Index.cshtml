@@ -1,0 +1,242 @@
+@model AdminDashboardViewModel
+
+<div class="admin-page-head">
+    <div>
+        <h1 class="admin-page-title">@L["Admin.DashboardTitle"]</h1>
+        <p class="admin-page-subtitle">@L["Admin.DashboardSubtitle"]</p>
+    </div>
+    <div class="admin-head-actions">
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Categories" asp-action="Create">
+            + @L["Admin.QuickAddCategory"]
+        </a>
+        <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="Products" asp-action="Create">
+            + @L["Admin.QuickAddProduct"]
+        </a>
+    </div>
+</div>
+
+<section class="admin-kpi-grid" aria-label="@L["Admin.DashboardTitle"]">
+    <article class="kpi-card">
+        <div class="kpi-card-top">
+            <span class="kpi-label">@L["Admin.KpiTotalRevenue"]</span>
+            <span class="kpi-icon is-accent" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="kpi-value mono">@Model.FormattedTotalRevenue</div>
+        <div class="kpi-sub">@L["Admin.KpiRevenueSub", Model.FormattedRevenueLast30Days]</div>
+    </article>
+
+    <article class="kpi-card">
+        <div class="kpi-card-top">
+            <span class="kpi-label">@L["Admin.KpiTotalOrders"]</span>
+            <span class="kpi-icon is-success" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="kpi-value mono">@Model.TotalOrders</div>
+        <div class="kpi-sub">@L["Admin.KpiPaidOrdersSub", Model.PaidOrdersCount]</div>
+    </article>
+
+    <article class="kpi-card">
+        <div class="kpi-card-top">
+            <span class="kpi-label">@L["Admin.KpiCatalog"]</span>
+            <span class="kpi-icon is-neutral" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="kpi-value mono">@Model.TotalProducts</div>
+        <div class="kpi-sub">@L["Admin.KpiCatalogSub", Model.ActiveProducts, Model.TotalCategories]</div>
+    </article>
+
+    <article class="kpi-card @(Model.LowStockAlerts.Count > 0 ? "is-alert" : "")">
+        <div class="kpi-card-top">
+            <span class="kpi-label">@L["Admin.KpiLowStock"]</span>
+            <span class="kpi-icon @(Model.LowStockAlerts.Count > 0 ? "is-warning" : "is-success")" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </span>
+        </div>
+        <div class="kpi-value mono">@(Model.LowStockProductsCount + Model.OutOfStockProductsCount)</div>
+        <div class="kpi-sub">@L["Admin.KpiLowStockSub", Model.OutOfStockProductsCount, Model.LowStockThreshold]</div>
+    </article>
+</section>
+
+<section class="panel-card admin-section-card">
+    <div class="admin-panel-head">
+        <div>
+            <h2 class="admin-panel-title">@L["Admin.OrderBreakdownTitle"]</h2>
+            <p class="admin-panel-subtitle">@L["Admin.OrderBreakdownSubtitle"]</p>
+        </div>
+        <a class="btn btn-ghost btn-sm" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+            @L["Admin.ViewAllOrders"] →
+        </a>
+    </div>
+
+    <div class="admin-status-grid">
+        @foreach (var stat in Model.OrderCountsByStatus)
+        {
+            var badgeClass = AdminHelpers.GetOrderBadgeClass(stat.Status);
+            <a class="status-tile" asp-area="Admin" asp-controller="Orders" asp-action="Index" asp-route-status="@stat.Status">
+                <div class="status-tile-top">
+                    <span class="badge @badgeClass">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        @L[stat.Status.GetStatusResourceKey()]
+                    </span>
+                </div>
+                <div class="status-tile-count mono">@stat.Count</div>
+                <div class="status-tile-rev mono">@stat.FormattedRevenue</div>
+            </a>
+        }
+    </div>
+</section>
+
+<section class="admin-two-col">
+    <div class="panel-card admin-section-card">
+        <div class="admin-panel-head">
+            <div>
+                <h2 class="admin-panel-title">@L["Admin.LowStockTitle"]</h2>
+                <p class="admin-panel-subtitle">@L["Admin.LowStockSubtitle", Model.LowStockThreshold]</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" asp-area="Admin" asp-controller="Products" asp-action="Index" asp-route-stock="low-stock">
+                @L["Admin.ManageProducts"] →
+            </a>
+        </div>
+
+        @if (Model.LowStockAlerts.Count == 0)
+        {
+            <div class="admin-empty-box">
+                <p>@L["Admin.LowStockEmpty"]</p>
+            </div>
+        }
+        else
+        {
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>@L["Admin.ColProduct"]</th>
+                            <th>@L["Admin.ColStock"]</th>
+                            <th class="text-right">@L["Admin.ColActions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.LowStockAlerts)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="table-product-cell">
+                                        <div class="table-thumb">
+                                            @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" alt="@item.Name" loading="lazy" />
+                                            }
+                                        </div>
+                                        <div class="table-product-meta">
+                                            <a class="table-primary-link" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@item.Id">@item.Name</a>
+                                            <span class="table-secondary-text mono">@item.Sku · @item.CategoryName</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (item.StockQuantity <= 0)
+                                    {
+                                        <span class="badge badge-danger">
+                                            <span class="status-dot" aria-hidden="true"></span>
+                                            @L["Stock.OutOfStock"]
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-warning">
+                                            <span class="status-dot" aria-hidden="true"></span>
+                                            @L["Stock.LowStock", item.StockQuantity]
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-right">
+                                    <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@item.Id">
+                                        @L["Common.Edit"]
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="panel-card admin-section-card">
+        <div class="admin-panel-head">
+            <div>
+                <h2 class="admin-panel-title">@L["Admin.RecentOrdersTitle"]</h2>
+                <p class="admin-panel-subtitle">@L["Admin.RecentOrdersSubtitle"]</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+                @L["Admin.ViewAllOrders"] →
+            </a>
+        </div>
+
+        @if (Model.RecentOrders.Count == 0)
+        {
+            <div class="admin-empty-box">
+                <p>@L["Admin.RecentOrdersEmpty"]</p>
+            </div>
+        }
+        else
+        {
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>@L["Admin.ColOrderNumber"]</th>
+                            <th>@L["Admin.ColCustomer"]</th>
+                            <th>@L["Admin.ColStatus"]</th>
+                            <th class="text-right">@L["Admin.ColTotal"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td>
+                                    <a class="table-primary-link mono" asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id">
+                                        @order.OrderNumber
+                                    </a>
+                                    <div class="table-secondary-text mono">@order.CreatedAtUtc.ToString("yyyy-MM-dd HH:mm")</div>
+                                </td>
+                                <td>
+                                    <div class="table-primary-text">@order.CustomerName</div>
+                                    <div class="table-secondary-text mono">@order.CustomerEmail</div>
+                                </td>
+                                <td>
+                                    <span class="badge @AdminHelpers.GetOrderBadgeClass(order.Status)">
+                                        <span class="status-dot" aria-hidden="true"></span>
+                                        @L[order.Status.GetStatusResourceKey()]
+                                    </span>
+                                </td>
+                                <td class="text-right mono">
+                                    <strong>@order.FormattedTotal</strong>
+                                    <div class="table-secondary-text">@L["Orders.ItemsSummary", order.ItemCount]</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

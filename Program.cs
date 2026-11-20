@@ -106,7 +106,13 @@ builder.Services.AddLocalization();
 builder.Services.Replace(ServiceDescriptor.Singleton<IStringLocalizerFactory, JsonStringLocalizerFactory>());
 
 var supportedCultures = JsonLocalizationStore.SupportedCultures
-    .Select(code => new CultureInfo(code))
+    .Select(code =>
+    {
+        var cultureInfo = new CultureInfo(code);
+        cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+        cultureInfo.NumberFormat.CurrencyDecimalSeparator = ".";
+        return cultureInfo;
+    })
     .ToList();
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -127,6 +133,7 @@ builder.Services.AddSingleton<ICurrencyFormatter, CurrencyFormatter>();
 builder.Services.AddScoped<IProductCatalogService, ProductCatalogService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IStripeCheckoutService, StripeCheckoutService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 // Security: CSRF protection for MVC & fetch API mutations
 builder.Services.AddAntiforgery(options =>

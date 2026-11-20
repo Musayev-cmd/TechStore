@@ -54,6 +54,7 @@ public sealed class JsonLocalizationStore
         foreach (var kvp in dict)
         {
             if (kvp.Key.StartsWith("Js.", StringComparison.Ordinal) ||
+                kvp.Key.StartsWith("AdminJs.", StringComparison.Ordinal) ||
                 kvp.Key.StartsWith("Stock.", StringComparison.Ordinal) ||
                 kvp.Key.StartsWith("Cart.", StringComparison.Ordinal) ||
                 kvp.Key.StartsWith("Catalog.", StringComparison.Ordinal) ||

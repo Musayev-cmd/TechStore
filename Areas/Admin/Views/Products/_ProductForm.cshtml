@@ -1,0 +1,381 @@
+@model AdminProductFormViewModel
+@{
+    var formAction = Model.IsEdit ? "Edit" : "Create";
+    var priceValue = Model.Price > 0 ? Model.Price.ToString("0.00", CultureInfo.InvariantCulture) : string.Empty;
+    var discountValue = Model.DiscountPrice.HasValue ? Model.DiscountPrice.Value.ToString("0.00", CultureInfo.InvariantCulture) : string.Empty;
+}
+
+<form method="post"
+      asp-area="Admin"
+      asp-controller="Products"
+      asp-action="@formAction"
+      asp-route-id="@(Model.IsEdit ? Model.Id : null)"
+      enctype="multipart/form-data"
+      novalidate
+      class="admin-form-layout"
+      data-product-form>
+    @Html.AntiForgeryToken()
+    @if (Model.IsEdit)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div class="admin-form-main">
+        @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+        {
+            <div class="alert alert-danger" role="alert">
+                @foreach (var err in ViewData.ModelState[string.Empty]!.Errors)
+                {
+                    <div>@err.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        <div class="panel-card">
+            <h2 class="panel-heading">@L["Admin.SectionIdentity"]</h2>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="field-label" asp-for="Sku">@L["Admin.FieldSku"] *</label>
+                    <input class="input mono" asp-for="Sku" autocomplete="off" />
+                    <span class="field-error" asp-validation-for="Sku"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="Brand">@L["Admin.FieldBrand"] *</label>
+                    <input class="input" asp-for="Brand" />
+                    <span class="field-error" asp-validation-for="Brand"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="CategoryId">@L["Admin.FieldCategory"] *</label>
+                    <select class="select" asp-for="CategoryId">
+                        <option value="0">@L["Admin.SelectCategory"]</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat.Id">@cat.Name</option>
+                        }
+                    </select>
+                    <span class="field-error" asp-validation-for="CategoryId"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="Slug">@L["Admin.FieldSlug"]</label>
+                    <input class="input mono" asp-for="Slug" data-slug-target autocomplete="off" />
+                    <span class="field-hint">@L["Admin.FieldSlugHint"]</span>
+                    <span class="field-error" asp-validation-for="Slug"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card" data-lang-tabs>
+            <div class="admin-panel-head" style="margin-bottom:1rem;">
+                <h2 class="admin-panel-title">@L["Admin.SectionLocalized"]</h2>
+                <div class="lang-tabs-bar" role="tablist" aria-label="@L["Language.Label"]">
+                    <button type="button" class="lang-tab-btn is-active" role="tab" aria-selected="true" data-lang-tab="en">
+                        <span>@L["Admin.LangTabEn"]</span>
+                        <span class="lang-tab-error-dot" data-lang-tab-error="en" hidden aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="lang-tab-btn" role="tab" aria-selected="false" data-lang-tab="ru">
+                        <span>@L["Admin.LangTabRu"]</span>
+                        <span class="lang-tab-error-dot" data-lang-tab-error="ru" hidden aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="lang-tab-btn" role="tab" aria-selected="false" data-lang-tab="az">
+                        <span>@L["Admin.LangTabAz"]</span>
+                        <span class="lang-tab-error-dot" data-lang-tab-error="az" hidden aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="lang-tab-panel" data-lang-panel="en" role="tabpanel">
+                <div class="form-grid">
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="NameEn">@L["Admin.FieldName"] (EN) *</label>
+                        <input class="input" asp-for="NameEn" data-slug-source="@(!Model.IsEdit ? "true" : "false")" />
+                        <span class="field-error" asp-validation-for="NameEn"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="ShortDescriptionEn">@L["Admin.FieldShortDesc"] (EN) *</label>
+                        <input class="input" asp-for="ShortDescriptionEn" />
+                        <span class="field-error" asp-validation-for="ShortDescriptionEn"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="DescriptionEn">@L["Admin.FieldDescription"] (EN) *</label>
+                        <textarea class="textarea" asp-for="DescriptionEn" rows="4"></textarea>
+                        <span class="field-error" asp-validation-for="DescriptionEn"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lang-tab-panel" data-lang-panel="ru" role="tabpanel" hidden>
+                <div class="form-grid">
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="NameRu">@L["Admin.FieldName"] (RU) *</label>
+                        <input class="input" asp-for="NameRu" />
+                        <span class="field-error" asp-validation-for="NameRu"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="ShortDescriptionRu">@L["Admin.FieldShortDesc"] (RU) *</label>
+                        <input class="input" asp-for="ShortDescriptionRu" />
+                        <span class="field-error" asp-validation-for="ShortDescriptionRu"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="DescriptionRu">@L["Admin.FieldDescription"] (RU) *</label>
+                        <textarea class="textarea" asp-for="DescriptionRu" rows="4"></textarea>
+                        <span class="field-error" asp-validation-for="DescriptionRu"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lang-tab-panel" data-lang-panel="az" role="tabpanel" hidden>
+                <div class="form-grid">
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="NameAz">@L["Admin.FieldName"] (AZ) *</label>
+                        <input class="input" asp-for="NameAz" />
+                        <span class="field-error" asp-validation-for="NameAz"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="ShortDescriptionAz">@L["Admin.FieldShortDesc"] (AZ) *</label>
+                        <input class="input" asp-for="ShortDescriptionAz" />
+                        <span class="field-error" asp-validation-for="ShortDescriptionAz"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="DescriptionAz">@L["Admin.FieldDescription"] (AZ) *</label>
+                        <textarea class="textarea" asp-for="DescriptionAz" rows="4"></textarea>
+                        <span class="field-error" asp-validation-for="DescriptionAz"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card" data-specs-manager>
+            <div class="admin-panel-head" style="margin-bottom:0.85rem;">
+                <div>
+                    <h2 class="admin-panel-title">@L["Admin.SectionSpecs"]</h2>
+                    <p class="admin-panel-subtitle">@L["Admin.SpecsHelp"]</p>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm" data-spec-add>
+                    + @L["Admin.AddSpecRow"]
+                </button>
+            </div>
+
+            <span class="field-error" asp-validation-for="Specifications" style="margin-bottom:0.75rem;display:block;"></span>
+
+            <div class="spec-rows-list" data-specs-list>
+                @for (var i = 0; i < Model.Specifications.Count; i++)
+                {
+                    <div class="spec-row" data-spec-row>
+                        <div class="spec-row-grid">
+                            <div class="form-field">
+                                <label class="field-label">@L["Admin.SpecKeyEn"]</label>
+                                <input type="text"
+                                       class="input input-sm"
+                                       name="Specifications[@i].KeyEn"
+                                       value="@Model.Specifications[i].KeyEn"
+                                       data-spec-field="KeyEn"
+                                       maxlength="120" />
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">@L["Admin.SpecKeyRu"]</label>
+                                <input type="text"
+                                       class="input input-sm"
+                                       name="Specifications[@i].KeyRu"
+                                       value="@Model.Specifications[i].KeyRu"
+                                       data-spec-field="KeyRu"
+                                       maxlength="120" />
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">@L["Admin.SpecKeyAz"]</label>
+                                <input type="text"
+                                       class="input input-sm"
+                                       name="Specifications[@i].KeyAz"
+                                       value="@Model.Specifications[i].KeyAz"
+                                       data-spec-field="KeyAz"
+                                       maxlength="120" />
+                            </div>
+                            <div class="form-field">
+                                <label class="field-label">@L["Admin.SpecValue"]</label>
+                                <input type="text"
+                                       class="input input-sm mono"
+                                       name="Specifications[@i].Value"
+                                       value="@Model.Specifications[i].Value"
+                                       data-spec-field="Value"
+                                       maxlength="300" />
+                            </div>
+                        </div>
+                        <button type="button"
+                                class="btn-icon spec-remove-btn"
+                                data-spec-remove
+                                title="@L["Admin.RemoveSpecRow"]"
+                                aria-label="@L["Admin.RemoveSpecRow"]">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <template data-spec-row-template>
+                <div class="spec-row" data-spec-row>
+                    <div class="spec-row-grid">
+                        <div class="form-field">
+                            <label class="field-label">@L["Admin.SpecKeyEn"]</label>
+                            <input type="text" class="input input-sm" data-spec-field="KeyEn" maxlength="120" />
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">@L["Admin.SpecKeyRu"]</label>
+                            <input type="text" class="input input-sm" data-spec-field="KeyRu" maxlength="120" />
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">@L["Admin.SpecKeyAz"]</label>
+                            <input type="text" class="input input-sm" data-spec-field="KeyAz" maxlength="120" />
+                        </div>
+                        <div class="form-field">
+                            <label class="field-label">@L["Admin.SpecValue"]</label>
+                            <input type="text" class="input input-sm mono" data-spec-field="Value" maxlength="300" />
+                        </div>
+                    </div>
+                    <button type="button"
+                            class="btn-icon spec-remove-btn"
+                            data-spec-remove
+                            title="@L["Admin.RemoveSpecRow"]"
+                            aria-label="@L["Admin.RemoveSpecRow"]">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </template>
+        </div>
+
+        <div class="panel-card">
+            <h2 class="panel-heading">@L["Admin.SectionMedia"]</h2>
+
+            @if (Model.ExistingImages.Count > 0)
+            {
+                <div class="admin-subsection-label">@L["Admin.ExistingImages"]</div>
+                <div class="image-gallery-admin">
+                    @foreach (var img in Model.ExistingImages)
+                    {
+                        var isRemoved = Model.RemoveImageIds.Contains(img.Id);
+                        var isPrimary = Model.PrimaryImageId == img.Id || (!Model.PrimaryImageId.HasValue && img.IsPrimary);
+                        <div class="image-card-admin @(isRemoved ? "is-marked-remove" : "")" data-existing-image-card>
+                            <div class="image-card-preview">
+                                <img src="@img.Url" alt="@(img.AltText ?? Model.NameEn)" loading="lazy" />
+                                @if (isPrimary)
+                                {
+                                    <span class="badge badge-accent image-primary-tag">@L["Admin.PrimaryBadge"]</span>
+                                }
+                            </div>
+                            <div class="image-card-controls">
+                                <label class="radio-pill">
+                                    <input type="radio"
+                                           name="PrimaryImageId"
+                                           value="@img.Id"
+                                           checked="@(isPrimary ? "checked" : null)" />
+                                    <span>@L["Admin.SetPrimaryImage"]</span>
+                                </label>
+                                <label class="remove-pill">
+                                    <input type="checkbox"
+                                           name="RemoveImageIds"
+                                           value="@img.Id"
+                                           checked="@(isRemoved ? "checked" : null)"
+                                           data-remove-image-toggle />
+                                    <span>@L["Admin.MarkForRemoval"]</span>
+                                </label>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="form-field" style="margin-top:@(Model.ExistingImages.Count > 0 ? "1.25rem" : "0");">
+                <label class="field-label" for="product-new-images">@L["Admin.UploadImagesLabel"]</label>
+                <div class="upload-dropzone" data-upload-dropzone>
+                    <input id="product-new-images"
+                           class="upload-file-input"
+                           type="file"
+                           name="NewImages"
+                           multiple
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                           data-upload-input />
+                    <div class="upload-drop-content">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <div class="upload-drop-title">@L["Admin.UploadDropTitle"]</div>
+                        <div class="upload-drop-hint">@L["Admin.UploadDropHint"]</div>
+                        <span class="btn btn-secondary btn-sm">@L["Admin.UploadBrowse"]</span>
+                    </div>
+                </div>
+                <span class="field-error" asp-validation-for="NewImages"></span>
+                <div class="upload-status mono" data-upload-status hidden></div>
+                <div class="upload-preview-grid" data-upload-previews></div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="admin-form-side">
+        <div class="panel-card admin-sticky-card">
+            <h2 class="panel-heading">@L["Admin.SectionPricing"]</h2>
+
+            <div class="admin-side-fields">
+                <div class="form-field">
+                    <label class="field-label" asp-for="Price">@L["Admin.FieldPriceAzn"] *</label>
+                    <input class="input mono"
+                           id="Price"
+                           name="Price"
+                           type="number"
+                           step="0.01"
+                           min="0.01"
+                           value="@priceValue" />
+                    <span class="field-error" asp-validation-for="Price"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="DiscountPrice">@L["Admin.FieldDiscountPriceAzn"]</label>
+                    <input class="input mono"
+                           id="DiscountPrice"
+                           name="DiscountPrice"
+                           type="number"
+                           step="0.01"
+                           min="0.01"
+                           value="@discountValue" />
+                    <span class="field-hint">@L["Admin.FieldDiscountHint"]</span>
+                    <span class="field-error" asp-validation-for="DiscountPrice"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="StockQuantity">@L["Admin.FieldStockQty"] *</label>
+                    <input class="input mono" asp-for="StockQuantity" type="number" min="0" step="1" />
+                    <span class="field-error" asp-validation-for="StockQuantity"></span>
+                </div>
+            </div>
+
+            <h3 class="admin-side-subheading">@L["Admin.SectionVisibility"]</h3>
+            <div class="admin-side-checks">
+                <label class="checkbox-row">
+                    <input type="checkbox" asp-for="IsActive" />
+                    <span>@L["Admin.FieldIsActive"]</span>
+                </label>
+                <label class="checkbox-row">
+                    <input type="checkbox" asp-for="IsFeatured" />
+                    <span>@L["Admin.FieldIsFeatured"]</span>
+                </label>
+            </div>
+
+            <div class="admin-side-actions">
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">
+                    @(Model.IsEdit ? L["Admin.SaveProduct"] : L["Admin.CreateProduct"])
+                </button>
+                <a class="btn btn-secondary" style="width:100%;" asp-area="Admin" asp-controller="Products" asp-action="Index">
+                    @L["Common.Cancel"]
+                </a>
+            </div>
+        </div>
+    </aside>
+</form>

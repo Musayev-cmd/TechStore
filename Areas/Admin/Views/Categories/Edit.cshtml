@@ -1,0 +1,15 @@
+@model AdminCategoryFormViewModel
+
+<div class="admin-page-head">
+    <div>
+        <h1 class="admin-page-title">@L["Admin.CategoryEditTitle"]</h1>
+        <p class="admin-page-subtitle">@L["Admin.CategoryEditSubtitle"]</p>
+    </div>
+    <div class="admin-head-actions">
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Categories" asp-action="Index">
+            ← @L["Admin.BackToCategories"]
+        </a>
+    </div>
+</div>
+
+@await Html.PartialAsync("_CategoryForm", Model)

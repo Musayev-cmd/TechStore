@@ -1,0 +1,158 @@
+@model AdminCategoryFormViewModel
+@{
+    var formAction = Model.IsEdit ? "Edit" : "Create";
+    var iconOptions = new (string Key, string LabelKey)[]
+    {
+        ("laptop", "Admin.IconLaptop"),
+        ("cpu", "Admin.IconCpu"),
+        ("monitor", "Admin.IconMonitor"),
+        ("keyboard", "Admin.IconKeyboard"),
+        ("drive", "Admin.IconDrive"),
+        ("dock", "Admin.IconDock")
+    };
+}
+
+<form method="post"
+      asp-area="Admin"
+      asp-controller="Categories"
+      asp-action="@formAction"
+      asp-route-id="@(Model.IsEdit ? Model.Id : null)"
+      novalidate
+      class="admin-form-layout">
+    @Html.AntiForgeryToken()
+    @if (Model.IsEdit)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div class="admin-form-main">
+        @if (Model.IsEdit && Model.ProductCount > 0)
+        {
+            <div class="alert alert-info" role="status">
+                <span>@L["Admin.CategoryAssignedNotice", Model.ProductCount]</span>
+            </div>
+        }
+
+        <div class="panel-card" data-lang-tabs>
+            <div class="admin-panel-head" style="margin-bottom:1rem;">
+                <h2 class="admin-panel-title">@L["Admin.SectionLocalized"]</h2>
+                <div class="lang-tabs-bar" role="tablist" aria-label="@L["Language.Label"]">
+                    <button type="button" class="lang-tab-btn is-active" role="tab" aria-selected="true" data-lang-tab="en">
+                        <span>@L["Admin.LangTabEn"]</span>
+                        <span class="lang-tab-error-dot" data-lang-tab-error="en" hidden aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="lang-tab-btn" role="tab" aria-selected="false" data-lang-tab="ru">
+                        <span>@L["Admin.LangTabRu"]</span>
+                        <span class="lang-tab-error-dot" data-lang-tab-error="ru" hidden aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="lang-tab-btn" role="tab" aria-selected="false" data-lang-tab="az">
+                        <span>@L["Admin.LangTabAz"]</span>
+                        <span class="lang-tab-error-dot" data-lang-tab-error="az" hidden aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="lang-tab-panel" data-lang-panel="en" role="tabpanel">
+                <div class="form-grid">
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="NameEn">@L["Admin.ColCategory"] (EN) *</label>
+                        <input class="input" asp-for="NameEn" data-slug-source="@(!Model.IsEdit ? "true" : "false")" />
+                        <span class="field-error" asp-validation-for="NameEn"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="DescriptionEn">@L["Admin.FieldDescription"] (EN)</label>
+                        <textarea class="textarea" asp-for="DescriptionEn" rows="3"></textarea>
+                        <span class="field-error" asp-validation-for="DescriptionEn"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lang-tab-panel" data-lang-panel="ru" role="tabpanel" hidden>
+                <div class="form-grid">
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="NameRu">@L["Admin.ColCategory"] (RU) *</label>
+                        <input class="input" asp-for="NameRu" />
+                        <span class="field-error" asp-validation-for="NameRu"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="DescriptionRu">@L["Admin.FieldDescription"] (RU)</label>
+                        <textarea class="textarea" asp-for="DescriptionRu" rows="3"></textarea>
+                        <span class="field-error" asp-validation-for="DescriptionRu"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lang-tab-panel" data-lang-panel="az" role="tabpanel" hidden>
+                <div class="form-grid">
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="NameAz">@L["Admin.ColCategory"] (AZ) *</label>
+                        <input class="input" asp-for="NameAz" />
+                        <span class="field-error" asp-validation-for="NameAz"></span>
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label class="field-label" asp-for="DescriptionAz">@L["Admin.FieldDescription"] (AZ)</label>
+                        <textarea class="textarea" asp-for="DescriptionAz" rows="3"></textarea>
+                        <span class="field-error" asp-validation-for="DescriptionAz"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-card">
+            <h2 class="panel-heading">@L["Admin.FieldIcon"]</h2>
+            <div class="icon-picker-grid">
+                @foreach (var opt in iconOptions)
+                {
+                    var isChecked = string.Equals(Model.IconName, opt.Key, StringComparison.OrdinalIgnoreCase);
+                    <label class="icon-picker-option">
+                        <input type="radio" name="IconName" value="@opt.Key" checked="@(isChecked ? "checked" : null)" />
+                        <span class="icon-picker-card">
+                            <span class="admin-cat-icon-box" aria-hidden="true">
+                                @await Html.PartialAsync("~/Views/Shared/_CategoryIcon.cshtml", opt.Key)
+                            </span>
+                            <span class="icon-picker-label">@L[opt.LabelKey]</span>
+                        </span>
+                    </label>
+                }
+            </div>
+            <span class="field-error" asp-validation-for="IconName"></span>
+        </div>
+    </div>
+
+    <aside class="admin-form-side">
+        <div class="panel-card admin-sticky-card">
+            <h2 class="panel-heading">@L["Admin.SectionIdentity"]</h2>
+
+            <div class="admin-side-fields">
+                <div class="form-field">
+                    <label class="field-label" asp-for="Slug">@L["Admin.FieldSlug"]</label>
+                    <input class="input mono" asp-for="Slug" data-slug-target autocomplete="off" />
+                    <span class="field-hint">@L["Admin.FieldSlugHint"]</span>
+                    <span class="field-error" asp-validation-for="Slug"></span>
+                </div>
+
+                <div class="form-field">
+                    <label class="field-label" asp-for="DisplayOrder">@L["Admin.FieldDisplayOrder"]</label>
+                    <input class="input mono" asp-for="DisplayOrder" type="number" min="0" max="9999" />
+                    <span class="field-error" asp-validation-for="DisplayOrder"></span>
+                </div>
+            </div>
+
+            <div class="admin-side-checks" style="margin-top:1rem;">
+                <label class="checkbox-row">
+                    <input type="checkbox" asp-for="IsActive" />
+                    <span>@L["Admin.FieldIsActive"]</span>
+                </label>
+            </div>
+
+            <div class="admin-side-actions">
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;">
+                    @(Model.IsEdit ? L["Admin.SaveCategory"] : L["Admin.CreateCategory"])
+                </button>
+                <a class="btn btn-secondary" style="width:100%;" asp-area="Admin" asp-controller="Categories" asp-action="Index">
+                    @L["Common.Cancel"]
+                </a>
+            </div>
+        </div>
+    </aside>
+</form>

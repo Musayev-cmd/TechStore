@@ -1,0 +1,21 @@
+@model AdminProductFormViewModel
+
+<div class="admin-page-head">
+    <div>
+        <h1 class="admin-page-title">@L["Admin.ProductEditTitle"]</h1>
+        <p class="admin-page-subtitle">@L["Admin.ProductEditSubtitle"]</p>
+    </div>
+    <div class="admin-head-actions">
+        @if (Model.IsActive && !string.IsNullOrWhiteSpace(Model.Slug))
+        {
+            <a class="btn btn-ghost btn-sm" href="/Catalog/Details/@Model.Slug" target="_blank" rel="noopener">
+                @L["Admin.ViewInStore"] ↗
+            </a>
+        }
+        <a class="btn btn-secondary btn-sm" asp-area="Admin" asp-controller="Products" asp-action="Index">
+            ← @L["Admin.BackToProducts"]
+        </a>
+    </div>
+</div>
+
+@await Html.PartialAsync("_ProductForm", Model)
