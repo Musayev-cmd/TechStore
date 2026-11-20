@@ -14,7 +14,7 @@
             <p class="hero-subtitle">@L["Home.HeroSubtitle"]</p>
 
             <div class="hero-actions">
-                <a class="btn btn-primary btn-lg" href="/Catalog">@L["Home.HeroCtaPrimary"]</a>
+                <a class="btn btn-primary btn-lg" asp-controller="Catalog" asp-action="Index">@L["Home.HeroCtaPrimary"]</a>
                 <a class="btn btn-secondary btn-lg" href="/Catalog?category=components">@L["Home.HeroCtaSecondary"]</a>
             </div>
 
@@ -37,30 +37,63 @@
         @if (Model.HeroProduct is not null)
         {
             <article class="hero-showcase">
-                <a class="hero-showcase-media" href="/Catalog/Details/@Model.HeroProduct.Slug" style="display:block;">
-                    <img src="@Model.HeroProduct.ImageUrl" alt="@Model.HeroProduct.Name" loading="eager" />
+                <a class="hero-showcase-media" href="@Model.HeroProduct.Url" style="display:block;position:relative;">
+                    <img src="@Model.HeroProduct.ImageUrl" alt="@Model.HeroProduct.ImageAlt" loading="eager" />
+                    <div class="product-card-badges">
+                        @if (Model.HeroProduct.HasDiscount)
+                        {
+                            <span class="badge badge-accent">@L["Product.SavePercent", Model.HeroProduct.DiscountPercent]</span>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+
+                        @if (Model.HeroProduct.StockState == "out_of_stock")
+                        {
+                            <span class="badge badge-danger">@L["Stock.OutOfStock"]</span>
+                        }
+                        else if (Model.HeroProduct.StockState == "low_stock")
+                        {
+                            <span class="badge badge-warning">@L["Stock.LowStock", Model.HeroProduct.StockQuantity]</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success">@L["Stock.InStock"]</span>
+                        }
+                    </div>
                 </a>
                 <div class="hero-showcase-bar">
                     <div>
-                        <div class="mono" style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;">
+                        <div class="mono hero-showcase-sku">
                             @Model.HeroProduct.Brand · @Model.HeroProduct.Sku
                         </div>
-                        <a href="/Catalog/Details/@Model.HeroProduct.Slug" style="font-weight:650;font-size:0.98rem;">
+                        <a href="@Model.HeroProduct.Url" class="hero-showcase-title">
                             @Model.HeroProduct.Name
                         </a>
                     </div>
                     <div class="price-stack" style="text-align:right;flex-shrink:0;">
                         @if (Model.HeroProduct.HasDiscount)
                         {
-                            <span class="price-old">@Currency.Format(Model.HeroProduct.Price)</span>
+                            <span class="price-old">@Model.HeroProduct.FormattedPrice</span>
                         }
-                        <span class="price-current">@Currency.Format(Model.HeroProduct.EffectivePrice)</span>
+                        <span class="price-current">@Model.HeroProduct.FormattedEffectivePrice</span>
                     </div>
                 </div>
             </article>
         }
     </div>
 </section>
+
+<div class="promo-strip">
+    <div class="container promo-strip-inner">
+        <div class="promo-strip-text">
+            <span class="badge badge-accent">@L["Home.DealsTitle"]</span>
+            <span>@L["Home.PromoFreeShipping", Model.FormattedFreeShippingThreshold]</span>
+        </div>
+        <a class="promo-strip-link" href="/Catalog?deals=true">@L["Home.ViewAllDeals"] →</a>
+    </div>
+</div>
 
 <section id="categories" class="section">
     <div class="container">
@@ -69,7 +102,7 @@
                 <h2 class="section-title">@L["Home.CategoriesTitle"]</h2>
                 <p class="section-subtitle">@L["Home.CategoriesSubtitle"]</p>
             </div>
-            <a class="btn btn-ghost btn-sm" href="/Catalog">@L["Home.ViewAll"] →</a>
+            <a class="btn btn-ghost btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ViewAll"] →</a>
         </div>
 
         <div class="category-grid">
@@ -90,77 +123,73 @@
     </div>
 </section>
 
-<section id="featured" class="section" style="padding-top:1rem;">
+<section id="featured" class="section section-compact-top">
     <div class="container">
         <div class="section-header">
             <div>
                 <h2 class="section-title">@L["Home.FeaturedTitle"]</h2>
                 <p class="section-subtitle">@L["Home.FeaturedSubtitle"]</p>
             </div>
-            <a class="btn btn-ghost btn-sm" href="/Catalog">@L["Home.ViewAll"] →</a>
+            <a class="btn btn-ghost btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ViewAll"] →</a>
         </div>
 
         <div class="product-grid">
             @foreach (var product in Model.FeaturedProducts)
             {
-                <article class="product-card">
-                    <a class="product-card-media" href="/Catalog/Details/@product.Slug">
-                        <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
-                        <div class="product-card-badges">
-                            @if (product.HasDiscount)
-                            {
-                                <span class="badge badge-accent">@L["Product.SavePercent", product.DiscountPercent]</span>
-                            }
-                            else
-                            {
-                                <span></span>
-                            }
-
-                            @if (product.StockQuantity <= 0)
-                            {
-                                <span class="badge badge-danger">@L["Stock.OutOfStock"]</span>
-                            }
-                            else if (product.StockQuantity <= Model.LowStockThreshold)
-                            {
-                                <span class="badge badge-warning">@L["Stock.LowStock", product.StockQuantity]</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-success">@L["Stock.InStock"]</span>
-                            }
-                        </div>
-                    </a>
-
-                    <div class="product-card-body">
-                        <div class="product-card-meta">
-                            <span>@product.Brand</span>
-                            <span>@product.CategoryName</span>
-                        </div>
-                        <h3 class="product-card-title">
-                            <a href="/Catalog/Details/@product.Slug">@product.Name</a>
-                        </h3>
-                        <p class="product-card-desc">@product.ShortDescription</p>
-
-                        <div class="product-card-footer">
-                            <div class="price-stack">
-                                @if (product.HasDiscount)
-                                {
-                                    <span class="price-old">@Currency.Format(product.Price)</span>
-                                }
-                                <span class="price-current">@Currency.Format(product.EffectivePrice)</span>
-                            </div>
-                            <a class="btn btn-secondary btn-sm" href="/Catalog/Details/@product.Slug">
-                                @L["Catalog.ViewDetails"]
-                            </a>
-                        </div>
-                    </div>
-                </article>
+                @await Html.PartialAsync("_ProductCard", product)
             }
         </div>
     </div>
 </section>
 
-<section class="section" style="padding-top:1rem;">
+@if (Model.DealProducts.Count > 0)
+{
+    <section id="deals" class="section section-compact-top">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">@L["Home.DealsTitle"]</h2>
+                    <p class="section-subtitle">@L["Home.DealsSubtitle"]</p>
+                </div>
+                <a class="btn btn-ghost btn-sm" href="/Catalog?deals=true">@L["Home.ViewAllDeals"] →</a>
+            </div>
+
+            <div class="product-grid">
+                @foreach (var product in Model.DealProducts)
+                {
+                    @await Html.PartialAsync("_ProductCard", product)
+                }
+            </div>
+        </div>
+    </section>
+}
+
+@if (Model.Brands.Count > 0)
+{
+    <section id="brands" class="section section-compact-top">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">@L["Home.BrandsTitle"]</h2>
+                    <p class="section-subtitle">@L["Home.BrandsSubtitle"]</p>
+                </div>
+                <a class="btn btn-ghost btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ExploreNow"] →</a>
+            </div>
+
+            <div class="brand-strip">
+                @foreach (var brand in Model.Brands)
+                {
+                    <a class="brand-chip" href="/Catalog?brand=@Uri.EscapeDataString(brand.Name)">
+                        <span class="brand-chip-name">@brand.Name</span>
+                        <span class="brand-chip-count mono">@brand.ProductCount</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<section class="section section-compact-top">
     <div class="container">
         <div class="trust-grid">
             <div class="trust-card">

@@ -1,0 +1,53 @@
+@model ProductCardViewModel
+<article class="product-card" data-product-id="@Model.Id">
+    <a class="product-card-media" href="@Model.Url">
+        <img src="@Model.ImageUrl" alt="@Model.ImageAlt" loading="lazy" />
+        <div class="product-card-badges">
+            @if (Model.HasDiscount)
+            {
+                <span class="badge badge-accent">@L["Product.SavePercent", Model.DiscountPercent]</span>
+            }
+            else
+            {
+                <span></span>
+            }
+
+            @if (Model.StockState == "out_of_stock")
+            {
+                <span class="badge badge-danger">@L["Stock.OutOfStock"]</span>
+            }
+            else if (Model.StockState == "low_stock")
+            {
+                <span class="badge badge-warning">@L["Stock.LowStock", Model.StockQuantity]</span>
+            }
+            else
+            {
+                <span class="badge badge-success">@L["Stock.InStock"]</span>
+            }
+        </div>
+    </a>
+
+    <div class="product-card-body">
+        <div class="product-card-meta">
+            <span>@Model.Brand</span>
+            <span>@Model.CategoryName</span>
+        </div>
+        <h3 class="product-card-title">
+            <a href="@Model.Url">@Model.Name</a>
+        </h3>
+        <p class="product-card-desc">@Model.ShortDescription</p>
+
+        <div class="product-card-footer">
+            <div class="price-stack">
+                @if (Model.HasDiscount)
+                {
+                    <span class="price-old">@Model.FormattedPrice</span>
+                }
+                <span class="price-current">@Model.FormattedEffectivePrice</span>
+            </div>
+            <a class="btn btn-secondary btn-sm" href="@Model.Url">
+                @L["Catalog.ViewDetails"]
+            </a>
+        </div>
+    </div>
+</article>

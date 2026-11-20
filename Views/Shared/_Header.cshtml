@@ -2,6 +2,9 @@
 @{
     var currentCulture = LocalizationHelper.CurrentCultureCode();
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    var currentSearchQuery = Context.Request.Query["q"].FirstOrDefault()
+        ?? Context.Request.Query["search"].FirstOrDefault()
+        ?? string.Empty;
     var returnUrl = string.IsNullOrEmpty(Context.Request.Path)
         ? "/"
         : $"{Context.Request.Path}{Context.Request.QueryString}";
@@ -15,17 +18,36 @@
             <span>TechStore<span class="brand-dot">.</span></span>
         </a>
 
-        <nav class="header-nav" aria-label="Primary navigation">
+        <nav class="header-nav" aria-label="@L["Nav.PrimaryNavLabel"]">
             <a class="nav-link @(currentController == "Home" ? "is-active" : "")"
                asp-area="" asp-controller="Home" asp-action="Index">@L["Nav.Home"]</a>
             <a class="nav-link @(currentController == "Catalog" ? "is-active" : "")"
-               href="/Catalog">@L["Nav.Catalog"]</a>
+               asp-area="" asp-controller="Catalog" asp-action="Index">@L["Nav.Catalog"]</a>
             <a class="nav-link" href="/#categories">@L["Nav.Categories"]</a>
             @if (isAdmin)
             {
                 <a class="nav-link" href="/Admin">@L["Nav.Admin"]</a>
             }
         </nav>
+
+        <form class="header-search" action="/Catalog" method="get" role="search">
+            <svg class="header-search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search"
+                   name="q"
+                   value="@currentSearchQuery"
+                   class="header-search-input"
+                   placeholder="@L["Nav.SearchPlaceholder"]"
+                   aria-label="@L["Catalog.SearchLabel"]" />
+            <button type="submit" class="header-search-btn" aria-label="@L["Nav.SearchSubmit"]">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </form>
 
         <div class="header-actions">
             <div class="lang-switcher" role="group" aria-label="@L["Language.Label"]">
@@ -125,9 +147,18 @@
         </button>
     </div>
 
-    <nav class="mobile-nav-list" aria-label="Mobile navigation">
+    <form class="mobile-search-form" action="/Catalog" method="get" role="search">
+        <input type="search"
+               name="q"
+               value="@currentSearchQuery"
+               class="input"
+               placeholder="@L["Catalog.SearchPlaceholder"]"
+               aria-label="@L["Catalog.SearchLabel"]" />
+    </form>
+
+    <nav class="mobile-nav-list" aria-label="@L["Nav.MobileNavLabel"]">
         <a class="mobile-nav-link" asp-area="" asp-controller="Home" asp-action="Index">@L["Nav.Home"]</a>
-        <a class="mobile-nav-link" href="/Catalog">@L["Nav.Catalog"]</a>
+        <a class="mobile-nav-link" asp-area="" asp-controller="Catalog" asp-action="Index">@L["Nav.Catalog"]</a>
         <a class="mobile-nav-link" href="/#categories">@L["Nav.Categories"]</a>
         <a class="mobile-nav-link" href="/Cart">@L["Nav.Cart"]</a>
         @if (isAuthenticated)

@@ -124,6 +124,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 // Domain services
 builder.Services.AddSingleton<ICurrencyFormatter, CurrencyFormatter>();
+builder.Services.AddScoped<IProductCatalogService, ProductCatalogService>();
 
 // Security: CSRF protection for MVC & fetch API mutations
 builder.Services.AddAntiforgery(options =>
