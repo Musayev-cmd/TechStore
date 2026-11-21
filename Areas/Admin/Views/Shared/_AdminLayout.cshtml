@@ -34,26 +34,29 @@
     var clientI18nJson = JsonSerializer.Serialize(clientI18n);
 }
 <!DOCTYPE html>
-<html lang="@currentCulture" data-theme="light">
+<html lang="@currentCulture" data-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="@csrfTokens.RequestToken" />
     <title>@pageTitle</title>
 
-    @* Pre-paint Light/Dark theme bootstrap prevents flash on load *@
+    @* Pre-paint Light/Dark theme bootstrap prevents flash on load (defaults to Dark Matte Graphite) *@
     <script>
         (function () {
             try {
                 var saved = window.localStorage.getItem("techstore-theme");
-                var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-                var theme = saved === "dark" || saved === "light" ? saved : (prefersDark ? "dark" : "light");
+                var theme = saved === "light" || saved === "dark" ? saved : "dark";
                 document.documentElement.setAttribute("data-theme", theme);
             } catch (e) {
-                document.documentElement.setAttribute("data-theme", "light");
+                document.documentElement.setAttribute("data-theme", "dark");
             }
         })();
     </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
 
     <link rel="stylesheet" href="~/css/tokens.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />

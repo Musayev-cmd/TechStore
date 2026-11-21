@@ -26,60 +26,76 @@
     <div class="container">
         <div class="pdp-grid">
             <div class="pdp-gallery" data-product-gallery aria-label="@L["Product.GalleryLabel"]">
-                <div class="pdp-stage">
-                    @if (primaryImage is not null)
-                    {
-                        <button type="button"
-                                class="pdp-stage-trigger"
-                                data-lightbox-open
-                                aria-label="@L["Product.OpenLightbox"]">
-                            <img src="@primaryImage.Url"
-                                 alt="@primaryImage.AltText"
-                                 class="pdp-main-image"
-                                 data-gallery-main />
-                        </button>
-                    }
+                <div class="pdp-stage-frame">
+                    <div class="pdp-stage-bar">
+                        <div class="pdp-stage-bar-left">
+                            @if (hasMultipleImages)
+                            {
+                                <span class="pdp-stage-counter mono" data-gallery-counter>1 / @Model.Images.Count</span>
+                            }
+                            else
+                            {
+                                <span class="pdp-stage-counter mono">@Model.Sku</span>
+                            }
 
-                    @if (Model.HasDiscount)
-                    {
-                        <span class="badge badge-accent pdp-stage-discount">
-                            @L["Product.SavePercent", Model.DiscountPercent]
-                        </span>
-                    }
+                            @if (Model.HasDiscount)
+                            {
+                                <span class="badge badge-accent">
+                                    @L["Product.SavePercent", Model.DiscountPercent]
+                                </span>
+                            }
+                        </div>
 
-                    <button type="button"
-                            class="btn-icon pdp-stage-expand"
-                            data-lightbox-open
-                            aria-label="@L["Product.OpenLightbox"]"
-                            title="@L["Product.OpenLightbox"]">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <polyline points="15 3 21 3 21 9"></polyline>
-                            <polyline points="9 21 3 21 3 15"></polyline>
-                            <line x1="21" y1="3" x2="14" y2="10"></line>
-                            <line x1="3" y1="21" x2="10" y2="14"></line>
-                        </svg>
-                    </button>
+                        <div class="pdp-stage-bar-right">
+                            @if (hasMultipleImages)
+                            {
+                                <button type="button"
+                                        class="btn-icon pdp-stage-ctrl"
+                                        data-gallery-prev
+                                        aria-label="@L["Product.PreviousImage"]">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg>
+                                </button>
+                                <button type="button"
+                                        class="btn-icon pdp-stage-ctrl"
+                                        data-gallery-next
+                                        aria-label="@L["Product.NextImage"]">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </button>
+                            }
 
-                    @if (hasMultipleImages)
-                    {
-                        <button type="button"
-                                class="btn-icon pdp-stage-arrow is-prev"
-                                data-gallery-prev
-                                aria-label="@L["Product.PreviousImage"]">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <polyline points="15 18 9 12 15 6"></polyline>
-                            </svg>
-                        </button>
-                        <button type="button"
-                                class="btn-icon pdp-stage-arrow is-next"
-                                data-gallery-next
-                                aria-label="@L["Product.NextImage"]">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                            </svg>
-                        </button>
-                        <span class="pdp-stage-counter mono" data-gallery-counter>1 / @Model.Images.Count</span>
-                    }
+                            <button type="button"
+                                    class="btn-icon pdp-stage-ctrl"
+                                    data-lightbox-open
+                                    aria-label="@L["Product.OpenLightbox"]"
+                                    title="@L["Product.OpenLightbox"]">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="15 3 21 3 21 9"></polyline>
+                                    <polyline points="9 21 3 21 3 15"></polyline>
+                                    <line x1="21" y1="3" x2="14" y2="10"></line>
+                                    <line x1="3" y1="21" x2="10" y2="14"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pdp-stage">
+                        @if (primaryImage is not null)
+                        {
+                            <button type="button"
+                                    class="pdp-stage-trigger"
+                                    data-lightbox-open
+                                    aria-label="@L["Product.OpenLightbox"]">
+                                <img src="@primaryImage.Url"
+                                     alt="@primaryImage.AltText"
+                                     class="pdp-main-image"
+                                     data-gallery-main />
+                            </button>
+                        }
+                    </div>
                 </div>
 
                 @if (hasMultipleImages)

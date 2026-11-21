@@ -4,80 +4,109 @@
 }
 
 <section class="hero">
-    <div class="container hero-grid">
-        <div>
-            <span class="hero-eyebrow">
-                <span class="status-dot" aria-hidden="true"></span>
+    <div class="container">
+        <div class="hero-masthead">
+            <span class="hero-eyebrow mono">
+                <span class="hero-eyebrow-rule" aria-hidden="true"></span>
                 @L["Home.Eyebrow"]
             </span>
-            <h1 class="hero-title">@L["Home.HeroTitle"]</h1>
-            <p class="hero-subtitle">@L["Home.HeroSubtitle"]</p>
 
-            <div class="hero-actions">
-                <a class="btn btn-primary btn-lg" asp-controller="Catalog" asp-action="Index">@L["Home.HeroCtaPrimary"]</a>
-                <a class="btn btn-secondary btn-lg" href="/Catalog?category=components">@L["Home.HeroCtaSecondary"]</a>
+            <div class="hero-telemetry mono">
+                <span><strong>@Model.TotalCategories.ToString("D2")</strong> @L["Home.StatCategories"]</span>
+                <span class="hero-telemetry-sep" aria-hidden="true">/</span>
+                <span><strong>@Model.TotalProducts.ToString("D2")</strong> @L["Home.StatProducts"]</span>
+                <span class="hero-telemetry-sep" aria-hidden="true">/</span>
+                <span><strong>100%</strong> @L["Home.StatWarranty"]</span>
             </div>
+        </div>
 
-            <div class="hero-stats">
-                <div>
-                    <div class="hero-stat-value">@Model.TotalCategories</div>
-                    <div class="hero-stat-label">@L["Home.StatCategories"]</div>
-                </div>
-                <div>
-                    <div class="hero-stat-value">@Model.TotalProducts</div>
-                    <div class="hero-stat-label">@L["Home.StatProducts"]</div>
-                </div>
-                <div>
-                    <div class="hero-stat-value">100%</div>
-                    <div class="hero-stat-label">@L["Home.StatWarranty"]</div>
+        <div class="hero-editorial">
+            <h1 class="hero-title">@L["Home.HeroTitle"]</h1>
+
+            <div class="hero-lead-col">
+                <p class="hero-subtitle">@L["Home.HeroSubtitle"]</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary btn-lg" asp-controller="Catalog" asp-action="Index">@L["Home.HeroCtaPrimary"]</a>
+                    <a class="btn btn-secondary btn-lg" href="/Catalog?category=components">@L["Home.HeroCtaSecondary"]</a>
                 </div>
             </div>
         </div>
 
         @if (Model.HeroProduct is not null)
         {
-            <article class="hero-showcase">
-                <a class="hero-showcase-media" href="@Model.HeroProduct.Url" style="display:block;position:relative;">
+            var heroInStock = Model.HeroProduct.StockQuantity > 0;
+            <article class="hero-stage" data-product-id="@Model.HeroProduct.Id">
+                <a class="hero-stage-media" href="@Model.HeroProduct.Url">
                     <img src="@Model.HeroProduct.ImageUrl" alt="@Model.HeroProduct.ImageAlt" loading="eager" />
-                    <div class="product-card-badges">
+                </a>
+
+                <div class="hero-stage-plaque">
+                    <div class="hero-stage-tags">
+                        @if (Model.HeroProduct.StockState == "out_of_stock")
+                        {
+                            <span class="badge badge-danger">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                @L["Stock.OutOfStock"]
+                            </span>
+                        }
+                        else if (Model.HeroProduct.StockState == "low_stock")
+                        {
+                            <span class="badge badge-warning">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                @L["Stock.LowStock", Model.HeroProduct.StockQuantity]
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success">
+                                <span class="status-dot" aria-hidden="true"></span>
+                                @L["Stock.InStock"]
+                            </span>
+                        }
+
                         @if (Model.HeroProduct.HasDiscount)
                         {
                             <span class="badge badge-accent">@L["Product.SavePercent", Model.HeroProduct.DiscountPercent]</span>
                         }
-                        else
-                        {
-                            <span></span>
-                        }
+                    </div>
 
-                        @if (Model.HeroProduct.StockState == "out_of_stock")
-                        {
-                            <span class="badge badge-danger">@L["Stock.OutOfStock"]</span>
-                        }
-                        else if (Model.HeroProduct.StockState == "low_stock")
-                        {
-                            <span class="badge badge-warning">@L["Stock.LowStock", Model.HeroProduct.StockQuantity]</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-success">@L["Stock.InStock"]</span>
-                        }
-                    </div>
-                </a>
-                <div class="hero-showcase-bar">
-                    <div>
+                    <div class="hero-stage-copy">
                         <div class="mono hero-showcase-sku">
-                            @Model.HeroProduct.Brand · @Model.HeroProduct.Sku
+                            @Model.HeroProduct.Brand // @Model.HeroProduct.Sku
                         </div>
-                        <a href="@Model.HeroProduct.Url" class="hero-showcase-title">
-                            @Model.HeroProduct.Name
-                        </a>
+                        <h2 class="hero-stage-name">
+                            <a href="@Model.HeroProduct.Url">@Model.HeroProduct.Name</a>
+                        </h2>
+                        <p class="hero-stage-desc">@Model.HeroProduct.ShortDescription</p>
                     </div>
-                    <div class="price-stack" style="text-align:right;flex-shrink:0;">
-                        @if (Model.HeroProduct.HasDiscount)
-                        {
-                            <span class="price-old">@Model.HeroProduct.FormattedPrice</span>
-                        }
-                        <span class="price-current">@Model.HeroProduct.FormattedEffectivePrice</span>
+
+                    <div class="hero-stage-footer">
+                        <div class="price-stack">
+                            @if (Model.HeroProduct.HasDiscount)
+                            {
+                                <span class="price-old">@Model.HeroProduct.FormattedPrice</span>
+                            }
+                            <span class="hero-stage-price mono">@Model.HeroProduct.FormattedEffectivePrice</span>
+                        </div>
+
+                        <div class="hero-stage-cta">
+                            <a class="btn btn-secondary btn-sm" href="@Model.HeroProduct.Url">
+                                @L["Catalog.ViewDetails"] →
+                            </a>
+                            <button type="button"
+                                    class="btn-icon btn-card-cart"
+                                    data-quick-add-to-cart
+                                    data-product-id="@Model.HeroProduct.Id"
+                                    aria-label="@L["Cart.QuickAdd"]"
+                                    title="@(heroInStock ? L["Cart.QuickAdd"].Value : L["Stock.OutOfStock"].Value)"
+                                    disabled="@(!heroInStock)">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </article>
@@ -91,7 +120,7 @@
             <span class="badge badge-accent">@L["Home.DealsTitle"]</span>
             <span>@L["Home.PromoFreeShipping", Model.FormattedFreeShippingThreshold]</span>
         </div>
-        <a class="promo-strip-link" href="/Catalog?deals=true">@L["Home.ViewAllDeals"] →</a>
+        <a class="promo-strip-link mono" href="/Catalog?deals=true">@L["Home.ViewAllDeals"] →</a>
     </div>
 </div>
 
@@ -102,7 +131,7 @@
                 <h2 class="section-title">@L["Home.CategoriesTitle"]</h2>
                 <p class="section-subtitle">@L["Home.CategoriesSubtitle"]</p>
             </div>
-            <a class="btn btn-ghost btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ViewAll"] →</a>
+            <a class="btn btn-ghost btn-sm mono" asp-controller="Catalog" asp-action="Index">@L["Home.ViewAll"] →</a>
         </div>
 
         <div class="category-grid">
@@ -130,7 +159,7 @@
                 <h2 class="section-title">@L["Home.FeaturedTitle"]</h2>
                 <p class="section-subtitle">@L["Home.FeaturedSubtitle"]</p>
             </div>
-            <a class="btn btn-ghost btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ViewAll"] →</a>
+            <a class="btn btn-ghost btn-sm mono" asp-controller="Catalog" asp-action="Index">@L["Home.ViewAll"] →</a>
         </div>
 
         <div class="product-grid">
@@ -151,7 +180,7 @@
                     <h2 class="section-title">@L["Home.DealsTitle"]</h2>
                     <p class="section-subtitle">@L["Home.DealsSubtitle"]</p>
                 </div>
-                <a class="btn btn-ghost btn-sm" href="/Catalog?deals=true">@L["Home.ViewAllDeals"] →</a>
+                <a class="btn btn-ghost btn-sm mono" href="/Catalog?deals=true">@L["Home.ViewAllDeals"] →</a>
             </div>
 
             <div class="product-grid">
@@ -173,7 +202,7 @@
                     <h2 class="section-title">@L["Home.BrandsTitle"]</h2>
                     <p class="section-subtitle">@L["Home.BrandsSubtitle"]</p>
                 </div>
-                <a class="btn btn-ghost btn-sm" asp-controller="Catalog" asp-action="Index">@L["Home.ExploreNow"] →</a>
+                <a class="btn btn-ghost btn-sm mono" asp-controller="Catalog" asp-action="Index">@L["Home.ExploreNow"] →</a>
             </div>
 
             <div class="brand-strip">
@@ -194,7 +223,7 @@
         <div class="trust-grid">
             <div class="trust-card">
                 <div class="trust-icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         <polyline points="9 12 11 14 15 10"></polyline>
                     </svg>
@@ -205,7 +234,7 @@
 
             <div class="trust-card">
                 <div class="trust-icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="1" y="3" width="15" height="13"></rect>
                         <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
                         <circle cx="5.5" cy="18.5" r="2.5"></circle>
@@ -218,7 +247,7 @@
 
             <div class="trust-card">
                 <div class="trust-icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                         <line x1="2" y1="10" x2="22" y2="10"></line>
                     </svg>

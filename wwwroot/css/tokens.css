@@ -1,74 +1,84 @@
 /* ==========================================================================
-   TechStore Design Tokens — Minimalist High-Craft Hardware Aesthetic
+   TechStore Design Tokens — Matte Graphite & Warm Porcelain Hardware Aesthetic
+   Inspired by Leica, Bang & Olufsen, and Porsche Design
+   Zero blue/slate tint anywhere.
    ========================================================================== */
 
-:root {
-  color-scheme: light;
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
 
-  /* Surface & Canvas */
-  --bg-page: #f7f8fa;
-  --bg-surface: #ffffff;
-  --bg-subtle: #eff1f5;
-  --bg-elevated: #ffffff;
-  --bg-header: rgba(255, 255, 255, 0.86);
-  --bg-overlay: rgba(11, 14, 22, 0.48);
+  /* Surface & Canvas — Dark Mode (Default: Matte Graphite) */
+  --bg-page: #0a0a0a;
+  --bg-surface: #131313;
+  --bg-elevated: #1a1a1a;
+  --bg-subtle: #181818;
+  --bg-stage: #0e0e0d;
+  --bg-header: #0a0a0a;
+  --bg-overlay: rgba(5, 5, 4, 0.80);
 
   /* Ink & Typography */
-  --text-primary: #10131a;
-  --text-secondary: #4e5668;
-  --text-muted: #7a8396;
-  --text-inverse: #ffffff;
+  --text-primary: #f2efe9;
+  --text-secondary: #b6b1a7;
+  --text-muted: #8e8a82;
+  --text-inverse: #0a0a0a;
 
-  /* Precision Borders */
-  --border-subtle: #e3e6ee;
-  --border-strong: #c8cedb;
-  --border-focus: #0f62fe;
+  /* Precision Hairline Borders */
+  --border-subtle: #242424;
+  --border-strong: #333333;
+  --border-focus: #c8b48e;
 
-  /* Brand Accent (Precision Cobalt) */
-  --accent: #0f62fe;
-  --accent-hover: #0353e9;
-  --accent-soft: rgba(15, 98, 254, 0.10);
-  --accent-border: rgba(15, 98, 254, 0.24);
+  /* Primary Accent — Brushed Champagne / Titanium */
+  --accent: #c8b48e;
+  --accent-hover: #d9c7a5;
+  --accent-contrast: #0a0a0a;
+  --accent-soft: rgba(200, 180, 142, 0.10);
+  --accent-border: rgba(200, 180, 142, 0.30);
 
-  /* Semantic Status */
-  --success: #0d9468;
-  --success-soft: rgba(13, 148, 104, 0.11);
-  --warning: #d97706;
-  --warning-soft: rgba(217, 119, 6, 0.12);
-  --danger: #dc2626;
-  --danger-soft: rgba(220, 38, 38, 0.11);
-  --info: #0284c7;
-  --info-soft: rgba(2, 132, 199, 0.11);
+  /* Editorial Semantic Statuses (Desaturated, zero neon) */
+  --success: #7fa68a;
+  --success-soft: rgba(127, 166, 138, 0.10);
+  --success-border: rgba(127, 166, 138, 0.28);
+  --warning: #c89d5a;
+  --warning-soft: rgba(200, 157, 90, 0.10);
+  --warning-border: rgba(200, 157, 90, 0.28);
+  --danger: #b86660;
+  --danger-hover: #a2554f;
+  --danger-contrast: #f2efe9;
+  --danger-soft: rgba(184, 102, 96, 0.12);
+  --danger-border: rgba(184, 102, 96, 0.30);
+  --info: #b4a790;
+  --info-soft: rgba(180, 167, 144, 0.09);
+  --info-border: rgba(180, 167, 144, 0.25);
 
-  /* Skeleton Shimmer */
-  --skeleton-base: #e7eaf0;
-  --skeleton-highlight: #f3f5f9;
+  /* Skeleton Shimmer — Matte Graphite */
+  --skeleton-base: #161616;
+  --skeleton-highlight: #22211e;
 
   /* Typography */
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter Tight", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Radius Scale */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-pill: 9999px;
+  /* Architectural Radius Scale */
+  --radius-tag: 2px;
+  --radius-xs: 3px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
 
-  /* Elevation */
-  --shadow-xs: 0 1px 2px rgba(16, 19, 26, 0.04);
-  --shadow-sm: 0 2px 8px rgba(16, 19, 26, 0.06);
-  --shadow-md: 0 10px 28px rgba(16, 19, 26, 0.08);
-  --shadow-lg: 0 20px 48px rgba(16, 19, 26, 0.14);
+  /* Restrained Elevation (Hairline-first, never heavy blurs) */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.22);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.40);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.54);
 
   /* Layout & Motion */
-  --container-max: 1280px;
-  --header-height: 68px;
+  --container-max: 1320px;
+  --header-height: 70px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --transition-fast: 150ms var(--ease-out);
   --transition-base: 240ms var(--ease-out);
-  --transition-slow: 340ms var(--ease-out);
+  --transition-slow: 320ms var(--ease-out);
 
   /* Z-index layers */
   --z-header: 100;
@@ -78,44 +88,59 @@
   --z-toast: 300;
 }
 
-[data-theme="dark"] {
-  color-scheme: dark;
+[data-theme="light"] {
+  color-scheme: light;
 
-  --bg-page: #0a0c12;
-  --bg-surface: #12151f;
-  --bg-subtle: #191e2b;
-  --bg-elevated: #1c2231;
-  --bg-header: rgba(18, 21, 31, 0.84);
-  --bg-overlay: rgba(2, 4, 10, 0.72);
+  /* Surface & Canvas — Light Mode (Warm Porcelain) */
+  --bg-page: #f7f5f2;
+  --bg-surface: #ffffff;
+  --bg-elevated: #efece6;
+  --bg-subtle: #efece6;
+  --bg-stage: #f0ede7;
+  --bg-header: #f7f5f2;
+  --bg-overlay: rgba(20, 19, 17, 0.52);
 
-  --text-primary: #f2f4f8;
-  --text-secondary: #a1a9bc;
-  --text-muted: #6f788c;
-  --text-inverse: #0a0c12;
+  /* Ink & Typography */
+  --text-primary: #141311;
+  --text-secondary: #4a4741;
+  --text-muted: #6b6760;
+  --text-inverse: #ffffff;
 
-  --border-subtle: #232a3a;
-  --border-strong: #333d54;
-  --border-focus: #4589ff;
+  /* Precision Hairline Borders */
+  --border-subtle: #e2ddd5;
+  --border-strong: #c9c2b6;
+  --border-focus: #8f754b;
 
-  --accent: #4589ff;
-  --accent-hover: #6aa2ff;
-  --accent-soft: rgba(69, 137, 255, 0.16);
-  --accent-border: rgba(69, 137, 255, 0.34);
+  /* Primary Accent — Burnished Bronze */
+  --accent: #8f754b;
+  --accent-hover: #755e3a;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgba(143, 117, 75, 0.09);
+  --accent-border: rgba(143, 117, 75, 0.30);
 
-  --success: #34d399;
-  --success-soft: rgba(52, 211, 153, 0.14);
-  --warning: #fbbf24;
-  --warning-soft: rgba(251, 191, 36, 0.14);
-  --danger: #f87171;
-  --danger-soft: rgba(248, 113, 113, 0.15);
-  --info: #38bdf8;
-  --info-soft: rgba(56, 189, 248, 0.15);
+  /* Editorial Semantic Statuses (Desaturated, zero neon) */
+  --success: #4a6f55;
+  --success-soft: rgba(74, 111, 85, 0.09);
+  --success-border: rgba(74, 111, 85, 0.26);
+  --warning: #966b2c;
+  --warning-soft: rgba(150, 107, 44, 0.09);
+  --warning-border: rgba(150, 107, 44, 0.26);
+  --danger: #9c413b;
+  --danger-hover: #82342f;
+  --danger-contrast: #ffffff;
+  --danger-soft: rgba(156, 65, 59, 0.09);
+  --danger-border: rgba(156, 65, 59, 0.26);
+  --info: #786a55;
+  --info-soft: rgba(120, 106, 85, 0.09);
+  --info-border: rgba(120, 106, 85, 0.24);
 
-  --skeleton-base: #1a2030;
-  --skeleton-highlight: #242c42;
+  /* Skeleton Shimmer — Warm Porcelain */
+  --skeleton-base: #eae6df;
+  --skeleton-highlight: #f5f2ec;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.28);
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.36);
-  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.48);
-  --shadow-lg: 0 24px 56px rgba(0, 0, 0, 0.62);
+  /* Restrained Elevation */
+  --shadow-xs: 0 1px 2px rgba(20, 19, 17, 0.04);
+  --shadow-sm: 0 2px 6px rgba(20, 19, 17, 0.06);
+  --shadow-md: 0 8px 20px rgba(20, 19, 17, 0.08);
+  --shadow-lg: 0 16px 36px rgba(20, 19, 17, 0.12);
 }

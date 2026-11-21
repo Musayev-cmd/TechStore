@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Base Reset, Typography & Accessibility Defaults
+   Base Reset, Editorial Typography & Accessibility Defaults
    ========================================================================== */
 
 *,
@@ -12,6 +12,7 @@ html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  background-color: var(--bg-page);
 }
 
 body {
@@ -22,7 +23,9 @@ body {
   background-color: var(--bg-page);
   color: var(--text-primary);
   font-family: var(--font-sans);
+  font-weight: 400;
   line-height: 1.55;
+  letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-fast), color var(--transition-fast);
@@ -58,9 +61,10 @@ button {
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
   color: var(--text-primary);
-  font-weight: 650;
-  letter-spacing: -0.025em;
-  line-height: 1.18;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.14;
 }
 
 p {
@@ -73,8 +77,13 @@ ul, ol {
   list-style: none;
 }
 
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
 :focus-visible {
-  outline: 2px solid var(--border-focus);
+  outline: 1.5px solid var(--border-focus);
   outline-offset: 2px;
 }
 
@@ -87,13 +96,14 @@ ul, ol {
 
 @media (min-width: 768px) {
   .container {
-    padding-inline: 2rem;
+    padding-inline: 2.25rem;
   }
 }
 
 .mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 .sr-only {
@@ -115,7 +125,7 @@ ul, ol {
   z-index: 999;
   padding: 0.625rem 1rem;
   background: var(--accent);
-  color: #ffffff;
+  color: var(--accent-contrast);
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 600;

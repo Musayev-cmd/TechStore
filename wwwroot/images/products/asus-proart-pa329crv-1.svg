@@ -1,41 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560" role="img" aria-label="ASUS PROART PROART PA329CRV">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560" role="img" aria-label="ASUS PROART PA329CRV">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#141824"/>
-      <stop offset="100%" stop-color="#0B0E16"/>
+      <stop offset="0%" stop-color="#141412"/>
+      <stop offset="100%" stop-color="#0B0B0A"/>
     </linearGradient>
     <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#172033"/>
-      <stop offset="100%" stop-color="#0D1320"/>
+      <stop offset="0%" stop-color="#1A1916"/>
+      <stop offset="100%" stop-color="#10100E"/>
     </linearGradient>
     <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#94A3B8"/>
-      <stop offset="50%" stop-color="#64748B"/>
-      <stop offset="100%" stop-color="#475569"/>
+      <stop offset="0%" stop-color="#A8A298"/>
+      <stop offset="50%" stop-color="#76726A"/>
+      <stop offset="100%" stop-color="#4D4A45"/>
     </linearGradient>
+    <radialGradient id="museumLight" cx="50%" cy="38%" r="54%">
+      <stop offset="0%" stop-color="#2D2A24" stop-opacity="0.42"/>
+      <stop offset="65%" stop-color="#171614" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#0B0B0A" stop-opacity="0"/>
+    </radialGradient>
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#FFFFFF" stroke-opacity="0.04" stroke-width="1"/>
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#F2EFE9" stroke-opacity="0.025" stroke-width="1"/>
     </pattern>
   </defs>
   <rect width="800" height="560" fill="url(#bgGrad)"/>
   <rect width="800" height="560" fill="url(#grid)"/>
-  <circle cx="400" cy="255" r="210" fill="#06B6D4" fill-opacity="0.10"/>
-  <rect x="34" y="30" width="120" height="28" rx="6" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.12"/>
-  <text x="94" y="49" text-anchor="middle" fill="#CBD5E1" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12" font-weight="700">ASUS PROART</text>
-  <text x="766" y="49" text-anchor="end" fill="#64748B" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12">TS-MON-003</text>
+  <rect width="800" height="560" fill="url(#museumLight)"/>
+  <text x="36" y="44" fill="#8E8A82" font-family="JetBrains Mono, ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="500" letter-spacing="1.6">ASUS PROART</text>
+  <text x="764" y="44" text-anchor="end" fill="#6E6A63" font-family="JetBrains Mono, ui-monospace, SFMono-Regular, monospace" font-size="11" letter-spacing="1.2">TS-MON-003</text>
   <g transform="translate(140,95)">
-    <rect x="20" y="10" width="480" height="274" rx="12" fill="#0B0F17" stroke="#475569" stroke-width="3"/>
+    <rect x="20" y="10" width="480" height="274" rx="12" fill="#111110" stroke="#4D4A45" stroke-width="3"/>
     <rect x="32" y="22" width="456" height="248" rx="5" fill="url(#screenGrad)"/>
-    <circle cx="385" cy="130" r="68" fill="#06B6D4" fill-opacity="0.16"/>
-    <circle cx="385" cy="130" r="38" fill="#06B6D4" fill-opacity="0.28"/>
-    <rect x="64" y="58" width="180" height="12" rx="6" fill="#06B6D4" opacity="0.9"/>
-    <rect x="64" y="84" width="128" height="8" rx="4" fill="#94A3B8" opacity="0.55"/>
-    <rect x="64" y="122" width="210" height="110" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#64748B" stroke-opacity="0.35"/>
-    <rect x="242" y="284" width="36" height="54" fill="#334155"/>
-    <path d="M168 338 L352 338 L366 350 L154 350 Z" fill="url(#metalGrad)" stroke="#475569" stroke-width="1.5"/>
+    <circle cx="385" cy="130" r="68" fill="#C8B48E" fill-opacity="0.09"/>
+    <circle cx="385" cy="130" r="38" fill="#C8B48E" fill-opacity="0.16"/>
+    <rect x="64" y="58" width="180" height="12" rx="6" fill="#C8B48E" opacity="0.9"/>
+    <rect x="64" y="84" width="128" height="8" rx="4" fill="#A8A298" opacity="0.55"/>
+    <rect x="64" y="122" width="210" height="110" rx="8" fill="#FFFFFF" fill-opacity="0.05" stroke="#76726A" stroke-opacity="0.35"/>
+    <rect x="242" y="284" width="36" height="54" fill="#2E2D2A"/>
+    <path d="M168 338 L352 338 L366 350 L154 350 Z" fill="url(#metalGrad)" stroke="#4D4A45" stroke-width="1.5"/>
   </g>
-  <line x1="36" y1="472" x2="764" y2="472" stroke="#FFFFFF" stroke-opacity="0.08"/>
-  <text x="36" y="506" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">PROART PA329CRV</text>
-  <text x="36" y="532" fill="#94A3B8" font-family="ui-monospace, SFMono-Regular, monospace" font-size="13">32" 4K UHD · Delta E < 2</text>
-  <circle cx="754" cy="516" r="6" fill="#06B6D4"/>
+  <line x1="36" y1="472" x2="764" y2="472" stroke="#F2EFE9" stroke-opacity="0.09"/>
+  <text x="36" y="506" fill="#F2EFE9" font-family="Inter Tight, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="21" font-weight="600" letter-spacing="0.4">PROART PA329CRV</text>
+  <text x="36" y="532" fill="#8E8A82" font-family="JetBrains Mono, ui-monospace, SFMono-Regular, monospace" font-size="12">32" 4K UHD · Delta E &lt; 2</text>
+  <rect x="736" y="514" width="28" height="3" rx="1" fill="#C8B48E"/>
 </svg>

@@ -116,6 +116,10 @@
       for (let i = 0; i < count; i += 1) {
         cards.push(`
           <div class="skeleton-card" aria-hidden="true">
+            <div class="skeleton-top">
+              <div class="skeleton skeleton-tag"></div>
+              <div class="skeleton skeleton-tag" style="width:42px;"></div>
+            </div>
             <div class="skeleton skeleton-media"></div>
             <div class="skeleton-body">
               <div class="skeleton skeleton-line is-sm"></div>
@@ -136,18 +140,18 @@
 
     function renderStockBadge(item) {
       if (item.stockState === "out_of_stock") {
-        return `<span class="badge badge-danger">${escapeHtml(t("Stock.OutOfStock"))}</span>`;
+        return `<span class="badge badge-danger"><span class="status-dot" aria-hidden="true"></span>${escapeHtml(t("Stock.OutOfStock"))}</span>`;
       }
       if (item.stockState === "low_stock") {
-        return `<span class="badge badge-warning">${escapeHtml(t("Stock.LowStock", item.stockQuantity))}</span>`;
+        return `<span class="badge badge-warning"><span class="status-dot" aria-hidden="true"></span>${escapeHtml(t("Stock.LowStock", item.stockQuantity))}</span>`;
       }
-      return `<span class="badge badge-success">${escapeHtml(t("Stock.InStock"))}</span>`;
+      return `<span class="badge badge-success"><span class="status-dot" aria-hidden="true"></span>${escapeHtml(t("Stock.InStock"))}</span>`;
     }
 
     function renderProductCard(item) {
       const discountBadge = item.hasDiscount
         ? `<span class="badge badge-accent">${escapeHtml(t("Product.SavePercent", item.discountPercent))}</span>`
-        : "<span></span>";
+        : "";
 
       const oldPrice = item.hasDiscount
         ? `<span class="price-old">${escapeHtml(item.formattedPrice || formatPrice(item.price))}</span>`
@@ -159,12 +163,14 @@
 
       return `
         <article class="product-card is-entering" data-product-id="${Number(item.id)}">
+          <div class="product-card-top">
+            <div class="product-card-badges">
+              ${renderStockBadge(item)}
+              ${discountBadge}
+            </div>
+          </div>
           <a class="product-card-media" href="${escapeHtml(item.url)}">
             <img src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.imageAlt || item.name)}" loading="lazy" />
-            <div class="product-card-badges">
-              ${discountBadge}
-              ${renderStockBadge(item)}
-            </div>
           </a>
           <div class="product-card-body">
             <div class="product-card-meta">
@@ -191,7 +197,7 @@
                         aria-label="${escapeHtml(t("Cart.QuickAdd"))}"
                         title="${escapeHtml(inStock ? t("Cart.QuickAdd") : t("Stock.OutOfStock"))}"
                         ${inStock ? "" : "disabled"}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="9" cy="21" r="1"></circle>
                     <circle cx="20" cy="21" r="1"></circle>
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>

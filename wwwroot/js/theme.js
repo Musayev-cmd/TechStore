@@ -1,14 +1,14 @@
-// Instant Light/Dark Theme Controller (synced with inline <head> bootstrap script)
+// Instant Light/Dark Theme Controller (synced with inline <head> bootstrap script, Dark default)
 (() => {
   const STORAGE_KEY = "techstore-theme";
   const root = document.documentElement;
 
   function getCurrentTheme() {
-    return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    return root.getAttribute("data-theme") === "light" ? "light" : "dark";
   }
 
   function applyTheme(theme, persist = false) {
-    const normalized = theme === "dark" ? "dark" : "light";
+    const normalized = theme === "light" ? "light" : "dark";
     root.setAttribute("data-theme", normalized);
 
     if (persist) {
@@ -32,17 +32,6 @@
         const next = getCurrentTheme() === "dark" ? "light" : "dark";
         applyTheme(next, true);
       });
-    });
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaQuery.addEventListener("change", (event) => {
-      try {
-        if (!window.localStorage.getItem(STORAGE_KEY)) {
-          applyTheme(event.matches ? "dark" : "light", false);
-        }
-      } catch {
-        applyTheme(event.matches ? "dark" : "light", false);
-      }
     });
   });
 })();

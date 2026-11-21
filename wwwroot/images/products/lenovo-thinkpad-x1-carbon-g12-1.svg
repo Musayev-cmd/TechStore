@@ -1,42 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560" role="img" aria-label="LENOVO THINKPAD X1 G12">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#141824"/>
-      <stop offset="100%" stop-color="#0B0E16"/>
+      <stop offset="0%" stop-color="#141412"/>
+      <stop offset="100%" stop-color="#0B0B0A"/>
     </linearGradient>
     <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#172033"/>
-      <stop offset="100%" stop-color="#0D1320"/>
+      <stop offset="0%" stop-color="#1A1916"/>
+      <stop offset="100%" stop-color="#10100E"/>
     </linearGradient>
     <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#94A3B8"/>
-      <stop offset="50%" stop-color="#64748B"/>
-      <stop offset="100%" stop-color="#475569"/>
+      <stop offset="0%" stop-color="#A8A298"/>
+      <stop offset="50%" stop-color="#76726A"/>
+      <stop offset="100%" stop-color="#4D4A45"/>
     </linearGradient>
+    <radialGradient id="museumLight" cx="50%" cy="38%" r="54%">
+      <stop offset="0%" stop-color="#2D2A24" stop-opacity="0.42"/>
+      <stop offset="65%" stop-color="#171614" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#0B0B0A" stop-opacity="0"/>
+    </radialGradient>
     <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
-      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#FFFFFF" stroke-opacity="0.04" stroke-width="1"/>
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#F2EFE9" stroke-opacity="0.025" stroke-width="1"/>
     </pattern>
   </defs>
   <rect width="800" height="560" fill="url(#bgGrad)"/>
   <rect width="800" height="560" fill="url(#grid)"/>
-  <circle cx="400" cy="255" r="210" fill="#EF4444" fill-opacity="0.10"/>
-  <rect x="34" y="30" width="120" height="28" rx="6" fill="#FFFFFF" fill-opacity="0.07" stroke="#FFFFFF" stroke-opacity="0.12"/>
-  <text x="94" y="49" text-anchor="middle" fill="#CBD5E1" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12" font-weight="700">LENOVO</text>
-  <text x="766" y="49" text-anchor="end" fill="#64748B" font-family="ui-monospace, SFMono-Regular, monospace" font-size="12">TS-LAP-003</text>
+  <rect width="800" height="560" fill="url(#museumLight)"/>
+  <text x="36" y="44" fill="#8E8A82" font-family="JetBrains Mono, ui-monospace, SFMono-Regular, monospace" font-size="11" font-weight="500" letter-spacing="1.6">LENOVO</text>
+  <text x="764" y="44" text-anchor="end" fill="#6E6A63" font-family="JetBrains Mono, ui-monospace, SFMono-Regular, monospace" font-size="11" letter-spacing="1.2">TS-LAP-003</text>
   <g transform="translate(150,115)">
-    <rect x="45" y="10" width="410" height="250" rx="14" fill="#0F1219" stroke="#3B4254" stroke-width="3"/>
+    <rect x="45" y="10" width="410" height="250" rx="14" fill="#121210" stroke="#383632" stroke-width="3"/>
     <rect x="61" y="26" width="378" height="218" rx="6" fill="url(#screenGrad)"/>
-    <line x1="88" y1="70" x2="290" y2="70" stroke="#EF4444" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
-    <line x1="88" y1="92" x2="220" y2="92" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-    <rect x="88" y="120" width="130" height="84" rx="8" fill="#FFFFFF" fill-opacity="0.06" stroke="#EF4444" stroke-opacity="0.35"/>
-    <rect x="234" y="120" width="176" height="84" rx="8" fill="#FFFFFF" fill-opacity="0.04" stroke="#64748B" stroke-opacity="0.3"/>
-    <circle cx="250" cy="18" r="2.5" fill="#64748B"/>
-    <path d="M12 268 L488 268 L472 288 C468 293 460 295 452 295 L48 295 C40 295 32 293 28 288 Z" fill="url(#metalGrad)" stroke="#475569" stroke-width="2"/>
-    <rect x="208" y="271" width="84" height="6" rx="3" fill="#0F172A" opacity="0.6"/>
-    <rect x="12" y="266" width="476" height="3" fill="#EF4444" opacity="0.65"/>
+    <line x1="88" y1="70" x2="290" y2="70" stroke="#A6554E" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+    <line x1="88" y1="92" x2="220" y2="92" stroke="#A8A298" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+    <rect x="88" y="120" width="130" height="84" rx="8" fill="#FFFFFF" fill-opacity="0.06" stroke="#A6554E" stroke-opacity="0.35"/>
+    <rect x="234" y="120" width="176" height="84" rx="8" fill="#FFFFFF" fill-opacity="0.04" stroke="#76726A" stroke-opacity="0.3"/>
+    <circle cx="250" cy="18" r="2.5" fill="#76726A"/>
+    <path d="M12 268 L488 268 L472 288 C468 293 460 295 452 295 L48 295 C40 295 32 293 28 288 Z" fill="url(#metalGrad)" stroke="#4D4A45" stroke-width="2"/>
+    <rect x="208" y="271" width="84" height="6" rx="3" fill="#121210" opacity="0.6"/>
+    <rect x="12" y="266" width="476" height="3" fill="#A6554E" opacity="0.65"/>
   </g>
-  <line x1="36" y1="472" x2="764" y2="472" stroke="#FFFFFF" stroke-opacity="0.08"/>
-  <text x="36" y="506" fill="#F8FAFC" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="22" font-weight="700" letter-spacing="0.5">THINKPAD X1 G12</text>
-  <text x="36" y="532" fill="#94A3B8" font-family="ui-monospace, SFMono-Regular, monospace" font-size="13">Carbon Fiber · 1.09 kg</text>
-  <circle cx="754" cy="516" r="6" fill="#EF4444"/>
+  <line x1="36" y1="472" x2="764" y2="472" stroke="#F2EFE9" stroke-opacity="0.09"/>
+  <text x="36" y="506" fill="#F2EFE9" font-family="Inter Tight, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="21" font-weight="600" letter-spacing="0.4">THINKPAD X1 G12</text>
+  <text x="36" y="532" fill="#8E8A82" font-family="JetBrains Mono, ui-monospace, SFMono-Regular, monospace" font-size="12">Carbon Fiber · 1.09 kg</text>
+  <rect x="736" y="514" width="28" height="3" rx="1" fill="#A6554E"/>
 </svg>
