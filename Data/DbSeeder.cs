@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Options;
 using TechStore.Models;
 using TechStore.Options;
@@ -23,12 +25,28 @@ public static class DbSeeder
 
         if (dbOptions.AutoMigrate || env.IsDevelopment())
         {
-            await db.Database.MigrateAsync();
+            if (db.Database.IsNpgsql() && !HasNpgsqlMigrations(db))
+            {
+                logger.LogInformation(
+                    "Bundled EF Core migrations target SQLite; ensuring native PostgreSQL schema via EnsureCreatedAsync.");
+                await db.Database.EnsureCreatedAsync();
+            }
+            else
+            {
+                await db.Database.MigrateAsync();
+            }
         }
 
         await SeedRolesAsync(provider, logger);
         await SeedAdminUserAsync(provider, env, logger);
         await SeedCatalogAsync(db, logger);
+    }
+
+    private static bool HasNpgsqlMigrations(AppDbContext db)
+    {
+        var migrationsAssembly = db.GetService<IMigrationsAssembly>();
+        var snapshotModel = migrationsAssembly.ModelSnapshot?.Model;
+        return snapshotModel?.FindAnnotation("Npgsql:ValueGenerationStrategy") is not null;
     }
 
     private static async Task SeedRolesAsync(IServiceProvider provider, ILogger logger)

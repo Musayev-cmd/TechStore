@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:-techstore}"
+      POSTGRES_USER: "${POSTGRES_USER:-techstore}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+    volumes:
+      - techstore_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - techstore_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT:-Production}"
+      ASPNETCORE_HTTP_PORTS: "8080"
+      Database__Provider: "PostgreSQL"
+      Database__AutoMigrate: "${DATABASE_AUTOMIGRATE:-true}"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB:-techstore};Username=${POSTGRES_USER:-techstore};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+      SeedAdmin__Email: "${SEED_ADMIN_EMAIL:-admin@techstore.local}"
+      SeedAdmin__FullName: "${SEED_ADMIN_FULLNAME:-TechStore Administrator}"
+      SeedAdmin__Password: "${SEED_ADMIN_PASSWORD:-}"
+      Stripe__SecretKey: "${STRIPE_SECRET_KEY:-}"
+      Stripe__PublishableKey: "${STRIPE_PUBLISHABLE_KEY:-}"
+      Stripe__WebhookSecret: "${STRIPE_WEBHOOK_SECRET:-}"
+    volumes:
+      - techstore_uploads:/app/wwwroot/uploads/products
+      - techstore_dataprotection:/home/app/.aspnet/DataProtection-Keys
+    networks:
+      - techstore_net
+
+volumes:
+  techstore_pgdata:
+  techstore_uploads:
+  techstore_dataprotection:
+
+networks:
+  techstore_net:
+    driver: bridge

@@ -58,6 +58,7 @@ public sealed class ProductsController : AdminBaseController
 
         var query = _db.Products
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(p => p.Category)
             .Include(p => p.Images)
             .Include(p => p.Specifications)
@@ -287,6 +288,7 @@ public sealed class ProductsController : AdminBaseController
         var culture = LocalizationHelper.CurrentCultureCode();
         var product = await _db.Products
             .AsNoTracking()
+            .AsSplitQuery()
             .Include(p => p.Images)
             .Include(p => p.Specifications)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
@@ -369,6 +371,7 @@ public sealed class ProductsController : AdminBaseController
         ViewData["Title"] = _localizer["Admin.ProductEditTitle"].Value;
 
         var product = await _db.Products
+            .AsSplitQuery()
             .Include(p => p.Images)
             .Include(p => p.Specifications)
             .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);

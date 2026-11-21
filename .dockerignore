@@ -1,0 +1,43 @@
+# Version control & editor metadata
+.git
+.gitignore
+.gitattributes
+.vs
+.vscode
+.idea
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# Build, publish & test artifacts
+**/bin/
+**/obj/
+out/
+publish/
+tests/
+
+# Local SQLite database files
+Data/*.db
+Data/*.db-shm
+Data/*.db-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Local secrets & environment files
+.env
+.env.*
+appsettings.Local.json
+appsettings.*.Local.json
+
+# Local uploaded product media (preserve directory marker)
+wwwroot/uploads/products/*
+!wwwroot/uploads/products/.gitkeep
+
+# Docker & documentation files not required for compilation
+Dockerfile
+docker-compose*.yml
+README.md
+PLAN.md
+AGENTS.md
